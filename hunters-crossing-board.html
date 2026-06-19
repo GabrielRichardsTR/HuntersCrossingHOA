@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hunters Crossing — Board Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2744;
+    --navy-mid: #243358;
+    --navy-light: #2e4070;
+    --brass: #b8922a;
+    --brass-light: #d4a83a;
+    --cream: #f5f0e8;
+    --cream-dark: #ede6d6;
+    --text: #1a2744;
+    --text-muted: #5a6a8a;
+    --white: #ffffff;
+    --green: #2d7a4f;
+    --red: #b03a2e;
+    --amber: #c0792a;
+    --border: #d6cebc;
+    --shadow: 0 2px 12px rgba(26,39,68,0.10);
+    --shadow-lg: 0 8px 32px rgba(26,39,68,0.16);
+  }
+
+  body { font-family: 'Source Serif 4', Georgia, serif; background: var(--cream); color: var(--text); }
+  .portal { min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--navy); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 3px solid var(--brass); position: sticky; top: 0; z-index: 100;
+  }
+  .header-brand { display: flex; align-items: center; gap: 1rem; padding: 1rem 0; }
+  .header-crest {
+    width: 44px; height: 44px; background: var(--brass); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(184,146,42,0.3);
+  }
+  .header-title h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 1.15rem; font-weight: 700; color: var(--white); line-height: 1.2; letter-spacing: 0.02em; }
+  .header-title p { font-size: 0.72rem; color: rgba(255,255,255,0.55); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 300; }
+  .header-public-link { font-size: 0.72rem; color: var(--brass-light); text-decoration: none; letter-spacing: 0.06em; opacity: 0.7; transition: opacity 0.2s; margin-right: 1.25rem; }
+  .header-public-link:hover { opacity: 1; }
+  .header-meta { font-size: 0.75rem; color: rgba(255,255,255,0.5); text-align: right; line-height: 1.6; display: flex; align-items: center; }
+  .header-meta strong { color: var(--brass-light); }
+
+  /* ── NAV TABS ── */
+  .nav { background: var(--navy-mid); padding: 0 2rem; display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); overflow-x: auto; }
+  .nav-tab {
+    padding: 0.85rem 1.2rem; color: rgba(255,255,255,0.55); font-family: 'Source Serif 4', serif; font-size: 0.8rem;
+    letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border: none; background: none;
+    border-bottom: 3px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+  .nav-tab:hover { color: rgba(255,255,255,0.85); }
+  .nav-tab.active { color: var(--brass-light); border-bottom-color: var(--brass-light); }
+  .nav-badge { background: var(--brass); color: var(--navy); font-size: 0.65rem; font-weight: 700; padding: 1px 6px; border-radius: 99px; line-height: 1.5; }
+
+  /* ── MAIN ── */
+  .main { flex: 1; padding: 2rem; max-width: 1150px; margin: 0 auto; width: 100%; }
+
+  /* ── SECTION HEADER ── */
+  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--cream-dark); flex-wrap: wrap; gap: 0.75rem; }
+  .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 600; color: var(--navy); }
+  .section-header p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+  .section-actions { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 0.5rem 1.1rem; border-radius: 4px; border: none; font-family: 'Source Serif 4', serif; font-size: 0.8rem;
+    font-weight: 600; cursor: pointer; letter-spacing: 0.04em; transition: all 0.15s; display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .btn-primary { background: var(--navy); color: var(--white); }
+  .btn-primary:hover { background: var(--navy-light); }
+  .btn-brass { background: var(--brass); color: var(--white); }
+  .btn-brass:hover { background: var(--brass-light); }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--cream-dark); color: var(--text); }
+  .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.72rem; }
+  .btn-red { color: var(--red); }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar { display: flex; gap: 0.7rem; margin-bottom: 1.2rem; align-items: center; flex-wrap: wrap; }
+  .search-input, .filter-select {
+    padding: 0.5rem 0.9rem; border: 1px solid var(--border); border-radius: 4px; font-family: 'Source Serif 4', serif;
+    font-size: 0.85rem; background: var(--white); color: var(--text); outline: none; transition: border-color 0.15s;
+  }
+  .search-input { flex: 1; min-width: 200px; }
+  .search-input:focus, .filter-select:focus { border-color: var(--brass); }
+  .filter-select { cursor: pointer; }
+
+  /* ── TABLE ── */
+  .table-wrap { background: var(--white); border-radius: 6px; box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--border); overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--navy); }
+  thead th { padding: 0.7rem 0.9rem; text-align: left; font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.75); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid var(--cream-dark); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #faf7f2; }
+  tbody td { padding: 0.7rem 0.9rem; font-size: 0.83rem; vertical-align: middle; }
+  .td-muted { color: var(--text-muted); font-size: 0.76rem; }
+  .td-yes { color: var(--green); font-weight: 600; }
+  .td-no { color: var(--text-muted); }
+
+  /* ── BADGES ── */
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .badge-green { background: #d4edda; color: #1a5c30; }
+  .badge-red { background: #fde8e6; color: #8b2a20; }
+  .badge-amber { background: #fef0d8; color: #8a5010; }
+  .badge-grey { background: #e8eaed; color: #4a5568; }
+  .badge-blue { background: #dce8f8; color: #1a3a6c; }
+
+  /* ── STAT CARDS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.2rem; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--brass); }
+  .stat-card-value { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--navy); line-height: 1; margin-bottom: 0.3rem; }
+  .stat-card-label { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .stat-card-sub { font-size: 0.75rem; color: var(--green); margin-top: 0.3rem; font-weight: 600; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10,18,40,0.55); backdrop-filter: blur(2px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: 8px; box-shadow: var(--shadow-lg); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; border-top: 4px solid var(--brass); }
+  .modal-header { padding: 1.2rem 1.5rem 1rem; border-bottom: 1px solid var(--cream-dark); display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 1.15rem; color: var(--navy); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--text-muted); cursor: pointer; line-height: 1; padding: 0.2rem; }
+  .modal-body { padding: 1.5rem; }
+  .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--cream-dark); display: flex; gap: 0.6rem; justify-content: flex-end; }
+
+  /* ── FORM ── */
+  .form-row { margin-bottom: 1rem; }
+  .form-row label { display: block; font-size: 0.76rem; font-weight: 600; color: var(--navy); letter-spacing: 0.03em; margin-bottom: 0.3rem; text-transform: uppercase; }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%; padding: 0.5rem 0.8rem; border: 1px solid var(--border); border-radius: 4px;
+    font-family: 'Source Serif 4', serif; font-size: 0.85rem; color: var(--text); background: var(--white); outline: none; transition: border-color 0.15s;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--brass); }
+  .form-row textarea { resize: vertical; min-height: 70px; }
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
+  .form-section-label { font-size: 0.7rem; font-weight: 600; color: var(--brass); letter-spacing: 0.08em; text-transform: uppercase; margin: 1.2rem 0 0.6rem; padding-top: 0.8rem; border-top: 1px solid var(--cream-dark); }
+  .checkbox-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
+  .checkbox-row input { width: auto; }
+  .checkbox-row label { margin-bottom: 0; text-transform: none; font-weight: 400; color: var(--text); font-size: 0.85rem; letter-spacing: normal; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+
+  /* ── SHEETS NOTICE ── */
+  .sheets-notice {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: var(--white); border-radius: 6px;
+    padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: flex-start; font-size: 0.8rem; line-height: 1.6; box-shadow: var(--shadow);
+  }
+  .sheets-notice-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .sheets-notice strong { color: var(--brass-light); display: block; margin-bottom: 0.2rem; font-size: 0.82rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .sheets-notice code { background: rgba(255,255,255,0.12); padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 0.78rem; }
+
+  /* ── EXPANDABLE RESIDENT CARD ── */
+  .resident-row-main { cursor: pointer; }
+  .resident-row-main:hover { background: #faf7f2; }
+  .resident-expand-icon { display: inline-block; transition: transform 0.2s; color: var(--brass); font-size: 0.7rem; margin-right: 0.4rem; }
+  .resident-expand-icon.open { transform: rotate(90deg); }
+  .resident-detail-row td { padding: 0; }
+  .resident-detail { background: var(--cream); padding: 1.2rem 1.5rem; display: none; }
+  .resident-detail.open { display: block; }
+  .resident-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+  .resident-detail-field { font-size: 0.78rem; }
+  .resident-detail-field label { display: block; color: var(--text-muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.2rem; }
+  .resident-detail-field .visibility-tag { font-size: 0.62rem; padding: 1px 6px; border-radius: 99px; margin-left: 0.4rem; }
+
+  /* ── DOCS / ANNOUNCEMENTS GRID ── */
+  .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+  .doc-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 1.1rem; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 0.5rem; transition: box-shadow 0.15s; }
+  .doc-card:hover { box-shadow: var(--shadow-lg); }
+  .doc-icon { font-size: 1.8rem; }
+  .doc-title { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 600; color: var(--navy); line-height: 1.3; }
+  .doc-meta { font-size: 0.72rem; color: var(--text-muted); }
+  .doc-actions { margin-top: auto; display: flex; gap: 0.4rem; }
+
+  .announcement-card { background: var(--white); border: 1px solid var(--border); border-left: 4px solid var(--brass); border-radius: 4px; padding: 1.2rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+  .announcement-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; color: var(--navy); margin-bottom: 0.3rem; }
+  .announcement-meta { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.6rem; }
+  .announcement-body { font-size: 0.88rem; color: var(--text); line-height: 1.6; }
+
+  .meeting-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 1.2rem; margin-bottom: 1rem; box-shadow: var(--shadow); display: flex; gap: 1.2rem; align-items: center; }
+  .meeting-date-block { background: var(--navy); color: var(--white); border-radius: 6px; padding: 0.7rem 1rem; text-align: center; min-width: 64px; }
+  .meeting-date-block .month { font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brass-light); }
+  .meeting-date-block .day { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; line-height: 1; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); }
+  .progress-top { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.78rem; color: var(--text-muted); }
+  .progress-top strong { color: var(--navy); }
+  .progress-track { height: 10px; background: var(--cream-dark); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
+
+  /* ── BUDGET SUMMARY ── */
+  .budget-year-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .budget-summary-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .budget-summary-card { background: var(--white); border: 1px solid var(--border); border-radius: 6px; padding: 1.1rem; box-shadow: var(--shadow); text-align: center; }
+  .budget-summary-card .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+  .budget-summary-card .value { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 700; }
+
+  /* ── PENDING SUBMISSIONS ── */
+  .pending-card { background: var(--white); border: 1px solid var(--border); border-left: 4px solid var(--amber); border-radius: 4px; padding: 1.2rem; margin-bottom: 1rem; box-shadow: var(--shadow); }
+  .pending-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
+  .pending-address { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--navy); }
+  .pending-diff { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; font-size: 0.82rem; margin-bottom: 0.8rem; }
+  .pending-diff-col label { display: block; font-size: 0.66rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .pending-actions { display: flex; gap: 0.5rem; }
+
+  @media (max-width: 640px) {
+    .main { padding: 1rem; }
+    .header { padding: 0 1rem; }
+    .form-grid-2, .form-grid-3, .budget-summary-row, .pending-diff { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="portal">
+  <header class="header">
+    <div class="header-brand">
+      <div class="header-crest">🌲</div>
+      <div class="header-title">
+        <h1>Hunters Crossing</h1>
+        <p>Board Portal · Ann Arbor, MI</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <a href="index.html" class="header-public-link">← Public Site</a>
+      <div style="text-align:right;">
+        <div>Logged in as <strong>Board Member</strong></div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">hunterstrailannarbor@gmail.com</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="nav" id="nav"></nav>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle"></h3>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// DATA — matches the real HuntersCrossing_HOA_Database.xlsx structure.
+// Replace these arrays with live fetch() calls once SheetDB is connected
+// (see the comment block at the bottom of this file).
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── LIVE GOOGLE SHEETS CONNECTION (via SheetDB) ───────────────────────────
+const SHEETDB_BASE = "https://sheetdb.io/api/v1/zyyfhlq7zoi0d";
+
+let residents = [];
+let violations = [];
+let dues = [];
+let budget = [];
+let announcements = [];
+let meetings = [];
+let pendingSubmissions = [];
+let documents = [];
+
+let dataLoaded = { residents:false, violations:false, dues:false, budget:false, announcements:false, meetings:false, pendingSubmissions:false, documents:false };
+let loadError = null;
+
+// Numeric fields come back from SheetDB as strings — convert on the way in.
+function toInt(v) { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; }
+
+async function loadSheet(tabName, mapRow) {
+  const res = await fetch(`${SHEETDB_BASE}?sheet=${encodeURIComponent(tabName)}`);
+  if (!res.ok) throw new Error(`${tabName}: ${res.status}`);
+  const rows = await res.json();
+  return mapRow ? rows.map(mapRow) : rows;
+}
+
+async function loadAllData() {
+  loadError = null;
+  const results = await Promise.allSettled([
+    loadSheet("Residents", row => ({ ...row, PropertyID: toInt(row.PropertyID) })),
+    loadSheet("Violations", row => ({ ...row, ViolationID: toInt(row.ViolationID), PropertyID: toInt(row.PropertyID) })),
+    loadSheet("Dues", row => ({ ...row, DuesID: toInt(row.DuesID), PropertyID: toInt(row.PropertyID), Year: toInt(row.Year), AmountDue: toInt(row.AmountDue), AmountPaid: toInt(row.AmountPaid) })),
+    loadSheet("Budget", row => ({ ...row, BudgetID: toInt(row.BudgetID), Year: toInt(row.Year), Amount: toInt(row.Amount) })),
+    loadSheet("Announcements", row => ({ ...row, AnnouncementID: toInt(row.AnnouncementID) })),
+    loadSheet("Meetings", row => ({ ...row, MeetingID: toInt(row.MeetingID) })),
+    loadSheet("PendingSubmissions", row => ({ ...row, SubmissionID: toInt(row.SubmissionID), PropertyID: toInt(row.PropertyID) })),
+    loadSheet("Documents", row => ({ ...row, DocumentID: toInt(row.DocumentID) })),
+  ]);
+
+  const names = ["Residents","Violations","Dues","Budget","Announcements","Meetings","PendingSubmissions","Documents"];
+  const failures = [];
+  results.forEach((res, i) => {
+    if (res.status === "rejected") {
+      failures.push(`${names[i]}: ${res.reason && res.reason.message ? res.reason.message : res.reason}`);
+    }
+  });
+
+  const [r, v, d, b, a, m, p, doc] = results.map(res => res.status === "fulfilled" ? res.value : []);
+  residents = r.filter(x => x.PropertyID);
+  violations = v.filter(x => x.ViolationID);
+  dues = d.filter(x => x.DuesID);
+  budget = b.filter(x => x.BudgetID);
+  announcements = a.filter(x => x.AnnouncementID);
+  meetings = m.filter(x => x.MeetingID);
+  pendingSubmissions = p.filter(x => x.SubmissionID);
+  documents = doc.filter(x => x.DocumentID);
+  if (dues.length) state.duesYear = Math.max(...dues.map(x => x.Year));
+  if (budget.length) state.budgetYear = Math.max(...budget.map(x => x.Year));
+
+  if (failures.length) {
+    loadError = failures.join(" | ");
+  } else if (!residents.length) {
+    loadError = "Connected successfully, but the Residents tab returned no usable rows. Check that the PropertyID column has numbers in it.";
+  }
+  render();
+}
+
+const BADGE_CLASS = {
+  Owner:"badge-blue", Tenant:"badge-amber",
+  Paid:"badge-green", Unpaid:"badge-red", Partial:"badge-amber",
+  Yes:"badge-green", No:"badge-grey",
+  Pending:"badge-amber", Approved:"badge-green", Rejected:"badge-red",
+};
+const DOC_ICONS = { Legal:"📜", Finance:"💰", Minutes:"📋", Vendor:"🔧", Other:"📄" };
+
+let state = {
+  tab: "residents",
+  residentSearch: "", residentExpanded: null,
+  duesYear: 2026, duesFilter: "All",
+  budgetYear: 2025,
+  docFilter: "All",
+};
+
+// ── UTILITIES ────────────────────────────────────────────────────────────
+const fmt = n => `$${Number(n).toLocaleString()}`;
+const today = () => new Date().toISOString().slice(0, 10);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const badge = status => `<span class="badge ${BADGE_CLASS[status] || "badge-grey"}">${esc(status)}</span>`;
+const sheetsNotice = sheetName => `
+  <div class="sheets-notice">
+    <div class="sheets-notice-icon">🔗</div>
+    <div>
+      <strong>Google Sheets Integration</strong>
+      This tab reads &amp; writes to your <code>${sheetName}</code> sheet tab via the Sheets API.
+      Changes here sync back to the spreadsheet. Board members can also edit the sheet directly —
+      data refreshes on each page load.
+    </div>
+  </div>`;
+
+// ── MODAL HELPERS ───────────────────────────────────────────────────────
+const modalOverlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+const modalFooter = document.getElementById("modalFooter");
+
+function openModal(title, bodyHtml, footerHtml) {
+  modalTitle.textContent = title;
+  modalBody.innerHTML = bodyHtml;
+  modalFooter.innerHTML = footerHtml;
+  modalOverlay.classList.add("open");
+}
+function closeModal() { modalOverlay.classList.remove("open"); }
+document.getElementById("modalClose").onclick = closeModal;
+modalOverlay.addEventListener("click", e => { if (e.target === modalOverlay) closeModal(); });
+
+// ══════════════════════════════════════════════════════════════════════════
+// RESIDENTS TAB — expandable rows showing full record incl. visibility flags
+// ══════════════════════════════════════════════════════════════════════════
+function renderResidents() {
+  const filtered = residents.filter(r =>
+    r.ResidentName.toLowerCase().includes(state.residentSearch.toLowerCase()) ||
+    r.Address.toLowerCase().includes(state.residentSearch.toLowerCase())
+  );
+  const ownerCount = residents.filter(r => r.OccupancyStatus === "Owner").length;
+  const tenantCount = residents.filter(r => r.OccupancyStatus === "Tenant").length;
+
+  return `
+    ${sheetsNotice("Residents")}
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-value">${residents.length}</div><div class="stat-card-label">Total Properties</div></div>
+      <div class="stat-card"><div class="stat-card-value">${ownerCount}</div><div class="stat-card-label">Owner-Occupied</div></div>
+      <div class="stat-card"><div class="stat-card-value">${tenantCount}</div><div class="stat-card-label">Tenant-Occupied</div></div>
+    </div>
+    <div class="section-header">
+      <div><h2>Resident Directory</h2><p>${filtered.length} properties shown · click a row for full details</p></div>
+      <div class="section-actions"><button class="btn btn-brass" onclick="openResidentForm()">+ Add Property</button></div>
+    </div>
+    <div class="filter-bar">
+      <input class="search-input" placeholder="Search by name or address…" value="${esc(state.residentSearch)}" oninput="state.residentSearch=this.value; render();">
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Address</th><th>Resident</th><th>Status</th><th>Public Email</th><th></th></tr></thead>
+        <tbody>
+          ${filtered.length === 0 ? `<tr><td colspan="6"><div class="empty-state"><p>No properties match your search.</p></div></td></tr>` : ""}
+          ${filtered.map(r => {
+            const isOpen = state.residentExpanded === r.PropertyID;
+            return `
+            <tr class="resident-row-main" onclick="toggleResident(${r.PropertyID})">
+              <td><span class="resident-expand-icon ${isOpen ? "open" : ""}">▶</span></td>
+              <td><strong>${esc(r.Address)}</strong></td>
+              <td>${esc(r.ResidentName)}</td>
+              <td>${badge(r.OccupancyStatus)}</td>
+              <td>${r.ShowEmailPublic === "Yes" ? `<span class="td-yes">Yes</span>` : `<span class="td-no">No</span>`}</td>
+              <td onclick="event.stopPropagation()"><button class="btn btn-ghost btn-sm" onclick="openResidentForm(${r.PropertyID})">Edit</button></td>
+            </tr>
+            <tr class="resident-detail-row"><td colspan="6">
+              <div class="resident-detail ${isOpen ? "open" : ""}">
+                <div class="resident-detail-grid">
+                  <div class="resident-detail-field"><label>Phone</label>${esc(r.Phone) || "—"} ${r.ShowPhonePublic === "Yes" ? `<span class="visibility-tag badge-green">public</span>` : `<span class="visibility-tag badge-grey">private</span>`}</div>
+                  <div class="resident-detail-field"><label>Email</label>${esc(r.Email) || "—"} ${r.ShowEmailPublic === "Yes" ? `<span class="visibility-tag badge-green">public</span>` : `<span class="visibility-tag badge-grey">private</span>`}</div>
+                  <div class="resident-detail-field"><label>Secondary Email</label>${esc(r.Email2) || "—"}</div>
+                  <div class="resident-detail-field"><label>Move-in Date</label>${esc(r.MoveInDate) || "—"}</div>
+                  <div class="resident-detail-field"><label>Name shown publicly</label>${r.ShowNamePublic === "Yes" ? `<span class="td-yes">Yes</span>` : `<span class="td-no">No</span>`}</div>
+                  ${r.OccupancyStatus === "Tenant" ? `
+                  <div class="resident-detail-field"><label>Tenant Name</label>${esc(r.TenantName) || "—"}</div>
+                  <div class="resident-detail-field"><label>Tenant Phone</label>${esc(r.TenantPhone) || "—"}</div>
+                  <div class="resident-detail-field"><label>Landlord Contact</label>${esc(r.LandlordContact) || "—"}</div>` : ""}
+                  ${r.BoardNotes ? `<div class="resident-detail-field" style="grid-column:1/-1;"><label>Board Notes</label>${esc(r.BoardNotes)}</div>` : ""}
+                </div>
+              </div>
+            </td></tr>`;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function toggleResident(id) {
+  state.residentExpanded = state.residentExpanded === id ? null : id;
+  render();
+}
+
+function openResidentForm(id) {
+  const r = id ? residents.find(x => x.PropertyID === id) : { PropertyID:"", Address:"", ResidentName:"", Phone:"", Email:"", Email2:"", MoveInDate:"", OccupancyStatus:"Owner", TenantName:"", TenantPhone:"", LandlordContact:"", ShowNamePublic:"Yes", ShowPhonePublic:"No", ShowEmailPublic:"No", BoardNotes:"" };
+  const body = `
+    <div class="form-grid-2">
+      <div class="form-row"><label>Property ID</label><input id="f_PropertyID" value="${esc(r.PropertyID)}" ${id ? "disabled" : ""}></div>
+      <div class="form-row"><label>Address</label><input id="f_Address" value="${esc(r.Address)}"></div>
+    </div>
+    <div class="form-row"><label>Resident Name(s)</label><input id="f_ResidentName" value="${esc(r.ResidentName)}"></div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Phone</label><input id="f_Phone" value="${esc(r.Phone)}"></div>
+      <div class="form-row"><label>Occupancy Status</label>
+        <select id="f_OccupancyStatus">${["Owner","Tenant"].map(s => `<option ${r.OccupancyStatus===s?"selected":""}>${s}</option>`).join("")}</select>
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Email</label><input id="f_Email" value="${esc(r.Email)}"></div>
+      <div class="form-row"><label>Secondary Email</label><input id="f_Email2" value="${esc(r.Email2)}"></div>
+    </div>
+    <div class="form-row"><label>Move-in Date</label><input id="f_MoveInDate" value="${esc(r.MoveInDate)}" placeholder="YYYY-MM-DD"></div>
+
+    <div class="form-section-label">Tenant Details (if applicable)</div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Tenant Name</label><input id="f_TenantName" value="${esc(r.TenantName)}"></div>
+      <div class="form-row"><label>Tenant Phone</label><input id="f_TenantPhone" value="${esc(r.TenantPhone)}"></div>
+    </div>
+    <div class="form-row"><label>Landlord Contact</label><input id="f_LandlordContact" value="${esc(r.LandlordContact)}"></div>
+
+    <div class="form-section-label">Public Site Visibility</div>
+    <div class="checkbox-row"><input type="checkbox" id="f_ShowNamePublic" ${r.ShowNamePublic==="Yes"?"checked":""}><label for="f_ShowNamePublic">Show name on public directory</label></div>
+    <div class="checkbox-row"><input type="checkbox" id="f_ShowPhonePublic" ${r.ShowPhonePublic==="Yes"?"checked":""}><label for="f_ShowPhonePublic">Show phone on public directory</label></div>
+    <div class="checkbox-row"><input type="checkbox" id="f_ShowEmailPublic" ${r.ShowEmailPublic==="Yes"?"checked":""}><label for="f_ShowEmailPublic">Show email on public directory</label></div>
+
+    <div class="form-row" style="margin-top:1rem;"><label>Board Notes</label><textarea id="f_BoardNotes">${esc(r.BoardNotes)}</textarea></div>`;
+  const footer = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-brass" onclick="saveResident(${id || "null"})">Save to Sheet</button>`;
+  openModal(id ? "Edit Property" : "Add Property", body, footer);
+}
+
+async function saveResident(id) {
+  const data = {
+    PropertyID: id || Number(document.getElementById("f_PropertyID").value) || Date.now(),
+    Address: document.getElementById("f_Address").value,
+    ResidentName: document.getElementById("f_ResidentName").value,
+    Phone: document.getElementById("f_Phone").value,
+    Email: document.getElementById("f_Email").value,
+    Email2: document.getElementById("f_Email2").value,
+    MoveInDate: document.getElementById("f_MoveInDate").value,
+    OccupancyStatus: document.getElementById("f_OccupancyStatus").value,
+    TenantName: document.getElementById("f_TenantName").value,
+    TenantPhone: document.getElementById("f_TenantPhone").value,
+    LandlordContact: document.getElementById("f_LandlordContact").value,
+    ShowNamePublic: document.getElementById("f_ShowNamePublic").checked ? "Yes" : "No",
+    ShowPhonePublic: document.getElementById("f_ShowPhonePublic").checked ? "Yes" : "No",
+    ShowEmailPublic: document.getElementById("f_ShowEmailPublic").checked ? "Yes" : "No",
+    BoardNotes: document.getElementById("f_BoardNotes").value,
+  };
+  try {
+    if (id) {
+      await fetch(`${SHEETDB_BASE}/PropertyID/${id}?sheet=Residents`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data })
+      });
+      residents = residents.map(r => r.PropertyID === id ? data : r);
+    } else {
+      await fetch(`${SHEETDB_BASE}?sheet=Residents`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [data] })
+      });
+      residents.push(data);
+    }
+    closeModal();
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// VIOLATIONS TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderViolations() {
+  const open = violations.filter(v => v.Resolved === "No").length;
+
+  return `
+    ${sheetsNotice("Violations")}
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-value">${violations.length}</div><div class="stat-card-label">Total Logged</div></div>
+      <div class="stat-card"><div class="stat-card-value" style="color:var(--red)">${open}</div><div class="stat-card-label">Unresolved</div></div>
+    </div>
+    <div class="section-header">
+      <div><h2>Violations &amp; Notices</h2><p>${violations.length} records</p></div>
+      <div class="section-actions"><button class="btn btn-brass" onclick="openViolationForm()">+ Log Violation</button></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Address</th><th>Description</th><th>Resolved</th><th>Resolved Date</th><th></th></tr></thead>
+        <tbody>
+          ${violations.length === 0 ? `<tr><td colspan="6"><div class="empty-state"><p>No violations on record. Hopefully it stays that way.</p></div></td></tr>` : ""}
+          ${violations.map(v => `
+            <tr>
+              <td class="td-muted">${esc(v.DateReported)}</td>
+              <td><strong>${esc(v.Address)}</strong></td>
+              <td class="td-muted" style="max-width:260px;">${esc(v.Description)}</td>
+              <td>${badge(v.Resolved === "Yes" ? "Approved" : "Pending")}</td>
+              <td class="td-muted">${esc(v.ResolvedDate) || "—"}</td>
+              <td style="white-space:nowrap;">
+                ${v.Resolved !== "Yes" ? `<button class="btn btn-ghost btn-sm" onclick="resolveViolation(${v.ViolationID})">✓ Resolve</button>` : ""}
+                <button class="btn btn-ghost btn-sm" onclick="openViolationForm(${v.ViolationID})">Edit</button>
+              </td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function openViolationForm(id) {
+  const v = id ? violations.find(x => x.ViolationID === id) : { PropertyID:"", Address:"", DateReported: today(), Description:"", Resolved:"No", ResolvedDate:"", BoardNotes:"" };
+  const addressOptions = residents.map(r => `<option value="${esc(r.Address)}" ${v.Address===r.Address?"selected":""}>${esc(r.Address)}</option>`).join("");
+  const body = `
+    <div class="form-grid-2">
+      <div class="form-row"><label>Address</label><select id="f_Address">${addressOptions}</select></div>
+      <div class="form-row"><label>Date Reported</label><input id="f_DateReported" type="date" value="${esc(v.DateReported)}"></div>
+    </div>
+    <div class="form-row"><label>Description</label><textarea id="f_Description">${esc(v.Description)}</textarea></div>
+    <div class="form-row"><label>Board Notes</label><textarea id="f_BoardNotes">${esc(v.BoardNotes)}</textarea></div>`;
+  const footer = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-brass" onclick="saveViolation(${id || "null"})">Save to Sheet</button>`;
+  openModal(id ? "Edit Violation" : "Log Violation", body, footer);
+}
+
+async function saveViolation(id) {
+  const address = document.getElementById("f_Address").value;
+  const resident = residents.find(r => r.Address === address);
+  const existing = id ? violations.find(x => x.ViolationID === id) : null;
+  const data = {
+    ViolationID: id || Date.now(),
+    PropertyID: resident ? resident.PropertyID : "",
+    Address: address,
+    DateReported: document.getElementById("f_DateReported").value,
+    Description: document.getElementById("f_Description").value,
+    Resolved: existing ? existing.Resolved : "No",
+    ResolvedDate: existing ? existing.ResolvedDate : "",
+    BoardNotes: document.getElementById("f_BoardNotes").value,
+  };
+  try {
+    if (id) {
+      await fetch(`${SHEETDB_BASE}/ViolationID/${id}?sheet=Violations`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data })
+      });
+      violations = violations.map(v => v.ViolationID === id ? data : v);
+    } else {
+      await fetch(`${SHEETDB_BASE}?sheet=Violations`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [data] })
+      });
+      violations.push(data);
+    }
+    closeModal();
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+async function resolveViolation(id) {
+  const ResolvedDate = today();
+  try {
+    await fetch(`${SHEETDB_BASE}/ViolationID/${id}?sheet=Violations`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: { Resolved: "Yes", ResolvedDate } })
+    });
+    violations = violations.map(v => v.ViolationID === id ? { ...v, Resolved: "Yes", ResolvedDate } : v);
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DUES TAB — year selector
+// ══════════════════════════════════════════════════════════════════════════
+function renderDues() {
+  const years = [...new Set(dues.map(d => d.Year))].sort();
+  const yearDues = dues.filter(d => d.Year === state.duesYear);
+  const filtered = yearDues.filter(d => state.duesFilter === "All" || d.Status === state.duesFilter);
+  const totalDue = yearDues.reduce((s, d) => s + d.AmountDue, 0);
+  const totalCollected = yearDues.reduce((s, d) => s + d.AmountPaid, 0);
+  const pct = totalDue ? Math.round((totalCollected / totalDue) * 100) : 0;
+  const paidCount = yearDues.filter(d => d.Status === "Paid").length;
+  const unpaidCount = yearDues.filter(d => d.Status === "Unpaid").length;
+  const barColor = pct === 100 ? "var(--green)" : pct > 50 ? "var(--brass)" : "var(--red)";
+
+  return `
+    ${sheetsNotice("Dues")}
+    <div class="filter-bar">
+      ${years.map(y => `<button class="btn ${state.duesYear === y ? "btn-primary" : "btn-ghost"} btn-sm" onclick="state.duesYear=${y}; render();">${y}</button>`).join("")}
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-value">${fmt(totalCollected)}</div><div class="stat-card-label">Collected</div><div class="stat-card-sub">${pct}% of goal</div></div>
+      <div class="stat-card"><div class="stat-card-value">${fmt(totalDue - totalCollected)}</div><div class="stat-card-label">Outstanding</div></div>
+      <div class="stat-card"><div class="stat-card-value">${paidCount}</div><div class="stat-card-label">Paid in Full</div></div>
+      <div class="stat-card"><div class="stat-card-value" style="color:var(--red)">${unpaidCount}</div><div class="stat-card-label">Unpaid</div></div>
+    </div>
+    <div class="progress-card">
+      <div class="progress-top"><span>Collection Progress — ${state.duesYear}</span><span><strong>${fmt(totalCollected)}</strong> of ${fmt(totalDue)}</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:${barColor};"></div></div>
+    </div>
+    <div class="section-header">
+      <div><h2>Dues Tracking — ${state.duesYear}</h2><p>${filtered.length} households shown</p></div>
+      <div class="section-actions">
+        <select class="filter-select" onchange="state.duesFilter=this.value; render();">
+          ${["All","Paid","Partial","Unpaid"].map(s => `<option ${state.duesFilter===s?"selected":""}>${s}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Address</th><th>Resident</th><th>Due</th><th>Paid</th><th>Balance</th><th>Method</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          ${filtered.map(d => `
+            <tr>
+              <td><strong>${esc(d.Address)}</strong></td>
+              <td>${esc(d.ResidentName)}</td>
+              <td>${fmt(d.AmountDue)}</td>
+              <td style="color:var(--green); font-weight:600;">${fmt(d.AmountPaid)}</td>
+              <td style="color:${d.AmountDue - d.AmountPaid > 0 ? "var(--red)" : "var(--green)"}; font-weight:600;">${fmt(d.AmountDue - d.AmountPaid)}</td>
+              <td class="td-muted">${esc(d.PaymentMethod) || "—"}</td>
+              <td>${badge(d.Status)}</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="openDuesForm(${d.DuesID})">Record Payment</button></td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function openDuesForm(id) {
+  const d = dues.find(x => x.DuesID === id);
+  const body = `
+    <p style="font-size:0.9rem; margin-bottom:1rem; color:var(--text-muted);">${esc(d.Address)} — ${esc(d.ResidentName)} (${d.Year})</p>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Amount Due ($)</label><input id="f_AmountDue" type="number" value="${d.AmountDue}"></div>
+      <div class="form-row"><label>Amount Paid ($)</label><input id="f_AmountPaid" type="number" value="${d.AmountPaid}"></div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Paid Date</label><input id="f_PaidDate" type="date" value="${d.PaidDate || today()}"></div>
+      <div class="form-row"><label>Payment Method</label>
+        <select id="f_PaymentMethod">${["Check","Cash","Venmo","Zelle","Other"].map(m => `<option ${d.PaymentMethod===m?"selected":""}>${m}</option>`).join("")}</select>
+      </div>
+    </div>
+    <div class="form-row"><label>Notes</label><textarea id="f_Notes">${esc(d.Notes)}</textarea></div>`;
+  const footer = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-brass" onclick="saveDues(${id})">Save to Sheet</button>`;
+  openModal("Record Payment", body, footer);
+}
+
+async function saveDues(id) {
+  const AmountDue = Number(document.getElementById("f_AmountDue").value);
+  const AmountPaid = Number(document.getElementById("f_AmountPaid").value);
+  const PaidDate = document.getElementById("f_PaidDate").value;
+  const PaymentMethod = document.getElementById("f_PaymentMethod").value;
+  const Notes = document.getElementById("f_Notes").value;
+  const Status = AmountPaid >= AmountDue ? "Paid" : AmountPaid > 0 ? "Partial" : "Unpaid";
+  try {
+    await fetch(`${SHEETDB_BASE}/DuesID/${id}?sheet=Dues`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: { AmountDue, AmountPaid, PaidDate, PaymentMethod, Notes, Status } })
+    });
+    dues = dues.map(d => d.DuesID === id ? { ...d, AmountDue, AmountPaid, PaidDate, PaymentMethod, Notes, Status } : d);
+    closeModal();
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// BUDGET TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderBudget() {
+  const years = [...new Set(budget.map(b => b.Year))].sort();
+  const yearRows = budget.filter(b => b.Year === state.budgetYear);
+  const income = yearRows.filter(b => b.Type === "Income").reduce((s, b) => s + b.Amount, 0);
+  const expense = yearRows.filter(b => b.Type === "Expense").reduce((s, b) => s + b.Amount, 0);
+  const net = income - expense;
+
+  return `
+    ${sheetsNotice("Budget")}
+    <div class="budget-year-tabs">
+      ${years.map(y => `<button class="btn ${state.budgetYear === y ? "btn-primary" : "btn-ghost"} btn-sm" onclick="state.budgetYear=${y}; render();">${y}</button>`).join("")}
+    </div>
+    <div class="budget-summary-row">
+      <div class="budget-summary-card"><div class="label">Income</div><div class="value" style="color:var(--green)">${fmt(income)}</div></div>
+      <div class="budget-summary-card"><div class="label">Expenses</div><div class="value" style="color:var(--red)">${fmt(expense)}</div></div>
+      <div class="budget-summary-card"><div class="label">Net</div><div class="value" style="color:${net >= 0 ? "var(--green)" : "var(--red)"}">${fmt(net)}</div></div>
+    </div>
+    <div class="section-header">
+      <div><h2>Budget — ${state.budgetYear}</h2><p>${yearRows.length} line items</p></div>
+      <div class="section-actions"><button class="btn btn-brass" onclick="openBudgetForm()">+ Add Line Item</button></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Notes</th><th></th></tr></thead>
+        <tbody>
+          ${yearRows.map(b => `
+            <tr>
+              <td>${badge(b.Type === "Income" ? "Paid" : "Unpaid")}</td>
+              <td><strong>${esc(b.Category)}</strong></td>
+              <td class="td-muted">${esc(b.Description)}</td>
+              <td style="font-weight:600; color:${b.Type==="Income"?"var(--green)":"var(--red)"}">${fmt(b.Amount)}</td>
+              <td class="td-muted">${esc(b.Notes)}</td>
+              <td><button class="btn btn-ghost btn-sm" onclick="openBudgetForm(${b.BudgetID})">Edit</button></td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function openBudgetForm(id) {
+  const b = id ? budget.find(x => x.BudgetID === id) : { Year: state.budgetYear, Type:"Expense", Category:"", Description:"", Amount:0, Notes:"" };
+  const body = `
+    <div class="form-grid-2">
+      <div class="form-row"><label>Year</label><input id="f_Year" type="number" value="${b.Year}"></div>
+      <div class="form-row"><label>Type</label><select id="f_Type">${["Income","Expense"].map(t => `<option ${b.Type===t?"selected":""}>${t}</option>`).join("")}</select></div>
+    </div>
+    <div class="form-row"><label>Category</label><input id="f_Category" value="${esc(b.Category)}" placeholder="e.g. Lighting, Landscaping, Dues…"></div>
+    <div class="form-row"><label>Description</label><input id="f_Description" value="${esc(b.Description)}"></div>
+    <div class="form-row"><label>Amount ($)</label><input id="f_Amount" type="number" value="${b.Amount}"></div>
+    <div class="form-row"><label>Notes</label><textarea id="f_Notes">${esc(b.Notes)}</textarea></div>`;
+  const footer = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-brass" onclick="saveBudget(${id || "null"})">Save to Sheet</button>`;
+  openModal(id ? "Edit Line Item" : "Add Line Item", body, footer);
+}
+
+async function saveBudget(id) {
+  const data = {
+    BudgetID: id || Date.now(),
+    Year: Number(document.getElementById("f_Year").value),
+    Type: document.getElementById("f_Type").value,
+    Category: document.getElementById("f_Category").value,
+    Description: document.getElementById("f_Description").value,
+    Amount: Number(document.getElementById("f_Amount").value),
+    Notes: document.getElementById("f_Notes").value,
+  };
+  try {
+    if (id) {
+      await fetch(`${SHEETDB_BASE}/BudgetID/${id}?sheet=Budget`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data })
+      });
+      budget = budget.map(b => b.BudgetID === id ? data : b);
+    } else {
+      await fetch(`${SHEETDB_BASE}?sheet=Budget`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [data] })
+      });
+      budget.push(data);
+    }
+    closeModal();
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// ANNOUNCEMENTS TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderAnnouncements() {
+  return `
+    ${sheetsNotice("Announcements")}
+    <div class="section-header">
+      <div><h2>Announcements</h2><p>${announcements.length} posted</p></div>
+      <div class="section-actions"><button class="btn btn-brass" onclick="openAnnouncementForm()">+ New Announcement</button></div>
+    </div>
+    ${announcements.length === 0 ? `<div class="empty-state"><p>No announcements yet.</p></div>` : ""}
+    ${announcements.slice().reverse().map(a => `
+      <div class="announcement-card">
+        <div class="announcement-title">${esc(a.Title)}</div>
+        <div class="announcement-meta">${esc(a.Date)} · ${esc(a.CreatedBy)} ${a.PublishToPublic === "Yes" ? badge("Approved") + " on public site" : badge("Rejected") + " board only"}</div>
+        <div class="announcement-body">${esc(a.Body)}</div>
+        <div style="margin-top:0.8rem;"><button class="btn btn-ghost btn-sm" onclick="openAnnouncementForm(${a.AnnouncementID})">Edit</button></div>
+      </div>`).join("")}`;
+}
+
+function openAnnouncementForm(id) {
+  const a = id ? announcements.find(x => x.AnnouncementID === id) : { Title:"", Body:"", Date: today(), Type:"Announcement", PublishToPublic:"Yes", CreatedBy:"" };
+  const body = `
+    <div class="form-row"><label>Title</label><input id="f_Title" value="${esc(a.Title)}"></div>
+    <div class="form-row"><label>Body</label><textarea id="f_Body">${esc(a.Body)}</textarea></div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Date</label><input id="f_Date" type="date" value="${esc(a.Date)}"></div>
+      <div class="form-row"><label>Created By</label><input id="f_CreatedBy" value="${esc(a.CreatedBy)}"></div>
+    </div>
+    <div class="checkbox-row"><input type="checkbox" id="f_PublishToPublic" ${a.PublishToPublic==="Yes"?"checked":""}><label for="f_PublishToPublic">Publish to public site</label></div>`;
+  const footer = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-brass" onclick="saveAnnouncement(${id || "null"})">Save to Sheet</button>`;
+  openModal(id ? "Edit Announcement" : "New Announcement", body, footer);
+}
+
+async function saveAnnouncement(id) {
+  const data = {
+    AnnouncementID: id || Date.now(),
+    Title: document.getElementById("f_Title").value,
+    Body: document.getElementById("f_Body").value,
+    Date: document.getElementById("f_Date").value,
+    Type: "Announcement",
+    PublishToPublic: document.getElementById("f_PublishToPublic").checked ? "Yes" : "No",
+    CreatedBy: document.getElementById("f_CreatedBy").value,
+  };
+  try {
+    if (id) {
+      await fetch(`${SHEETDB_BASE}/AnnouncementID/${id}?sheet=Announcements`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data })
+      });
+      announcements = announcements.map(a => a.AnnouncementID === id ? data : a);
+    } else {
+      await fetch(`${SHEETDB_BASE}?sheet=Announcements`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [data] })
+      });
+      announcements.push(data);
+    }
+    closeModal();
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// MEETINGS TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderMeetings() {
+  const MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  return `
+    ${sheetsNotice("Meetings")}
+    <div class="section-header">
+      <div><h2>Meetings</h2><p>${meetings.length} scheduled</p></div>
+      <div class="section-actions"><button class="btn btn-brass" onclick="openMeetingForm()">+ Add Meeting</button></div>
+    </div>
+    ${meetings.length === 0 ? `<div class="empty-state"><p>No meetings scheduled.</p></div>` : ""}
+    ${meetings.map(m => {
+      const d = new Date(m.Date + "T00:00:00");
+      return `
+      <div class="meeting-card">
+        <div class="meeting-date-block"><div class="month">${MONTHS[d.getMonth()]}</div><div class="day">${d.getDate()}</div></div>
+        <div style="flex:1;">
+          <div style="font-family:'Playfair Display',serif; font-weight:600; color:var(--navy); font-size:1.05rem;">${esc(m.Time)} · ${esc(m.Location)}</div>
+          <div class="td-muted" style="margin-top:0.3rem;">${esc(m.Notes)}</div>
+          <div style="margin-top:0.4rem;">${m.PublishToPublic === "Yes" ? badge("Approved") + " on public site" : badge("Rejected") + " board only"}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openMeetingForm(${m.MeetingID})">Edit</button>
+      </div>`;
+    }).join("")}`;
+}
+
+function openMeetingForm(id) {
+  const m = id ? meetings.find(x => x.MeetingID === id) : { Date: today(), Time:"7:00 PM", Location:"", Notes:"", PublishToPublic:"Yes" };
+  const body = `
+    <div class="form-grid-2">
+      <div class="form-row"><label>Date</label><input id="f_Date" type="date" value="${esc(m.Date)}"></div>
+      <div class="form-row"><label>Time</label><input id="f_Time" value="${esc(m.Time)}"></div>
+    </div>
+    <div class="form-row"><label>Location</label><input id="f_Location" value="${esc(m.Location)}"></div>
+    <div class="form-row"><label>Notes</label><textarea id="f_Notes">${esc(m.Notes)}</textarea></div>
+    <div class="checkbox-row"><input type="checkbox" id="f_PublishToPublic" ${m.PublishToPublic==="Yes"?"checked":""}><label for="f_PublishToPublic">Publish to public site</label></div>`;
+  const footer = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-brass" onclick="saveMeeting(${id || "null"})">Save to Sheet</button>`;
+  openModal(id ? "Edit Meeting" : "Add Meeting", body, footer);
+}
+
+async function saveMeeting(id) {
+  const data = {
+    MeetingID: id || Date.now(),
+    Date: document.getElementById("f_Date").value,
+    Time: document.getElementById("f_Time").value,
+    Location: document.getElementById("f_Location").value,
+    Notes: document.getElementById("f_Notes").value,
+    PublishToPublic: document.getElementById("f_PublishToPublic").checked ? "Yes" : "No",
+  };
+  try {
+    if (id) {
+      await fetch(`${SHEETDB_BASE}/MeetingID/${id}?sheet=Meetings`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data })
+      });
+      meetings = meetings.map(m => m.MeetingID === id ? data : m);
+    } else {
+      await fetch(`${SHEETDB_BASE}?sheet=Meetings`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [data] })
+      });
+      meetings.push(data);
+    }
+    closeModal();
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DOCUMENTS TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderDocuments() {
+  const cats = ["All", ...new Set(documents.map(d => d.Category))];
+  const filtered = documents.filter(d => state.docFilter === "All" || d.Category === state.docFilter);
+
+  return `
+    ${sheetsNotice("Documents")}
+    <div class="section-header">
+      <div><h2>Documents</h2><p>${filtered.length} files</p></div>
+      <div class="section-actions"><button class="btn btn-brass" onclick="openDocForm()">+ Add Document</button></div>
+    </div>
+    <div class="filter-bar">
+      ${cats.map(c => `<button class="btn ${state.docFilter === c ? "btn-primary" : "btn-ghost"} btn-sm" onclick="state.docFilter='${c}'; render();">${c}</button>`).join("")}
+    </div>
+    <div class="docs-grid">
+      ${filtered.length === 0 ? `<div class="empty-state"><p>No documents in this category.</p></div>` : ""}
+      ${filtered.map(d => `
+        <div class="doc-card">
+          <div class="doc-icon">${DOC_ICONS[d.Category] || "📄"}</div>
+          <div class="doc-title">${esc(d.Title)}</div>
+          <div class="doc-meta">${esc(d.Category)}</div>
+          <div class="doc-meta">${esc(d.Description)}</div>
+          <div class="doc-meta">${d.PublishToPublic === "Yes" ? "🌐 Public" : "🔒 Board only"}</div>
+          <div class="doc-actions">
+            ${d.URL ? `<a class="btn btn-ghost btn-sm" href="${esc(d.URL)}" target="_blank" rel="noopener">⬇ Open</a>` : `<button class="btn btn-ghost btn-sm" disabled>No link yet</button>`}
+            <button class="btn btn-ghost btn-sm" onclick="openDocForm(${d.DocumentID})">Edit</button>
+          </div>
+        </div>`).join("")}
+    </div>`;
+}
+
+function openDocForm(id) {
+  const d = id ? documents.find(x => x.DocumentID === id) : { Title:"", Description:"", URL:"", PublishToPublic:"Yes", Category:"Legal" };
+  const body = `
+    <div class="form-row"><label>Title</label><input id="f_Title" value="${esc(d.Title)}"></div>
+    <div class="form-row"><label>Description</label><input id="f_Description" value="${esc(d.Description)}"></div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Category</label>
+        <select id="f_Category">${["Legal","Finance","Minutes","Vendor","Other"].map(c => `<option ${d.Category===c?"selected":""}>${c}</option>`).join("")}</select>
+      </div>
+      <div class="form-row"><label>Link (Google Drive URL)</label><input id="f_URL" value="${esc(d.URL)}" placeholder="https://drive.google.com/…"></div>
+    </div>
+    <div class="checkbox-row"><input type="checkbox" id="f_PublishToPublic" ${d.PublishToPublic==="Yes"?"checked":""}><label for="f_PublishToPublic">Publish to public site</label></div>`;
+  const footer = `
+    <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn btn-brass" onclick="saveDoc(${id || "null"})">Save to Sheet</button>`;
+  openModal(id ? "Edit Document" : "Add Document", body, footer);
+}
+
+async function saveDoc(id) {
+  const data = {
+    DocumentID: id || Date.now(),
+    Title: document.getElementById("f_Title").value,
+    Description: document.getElementById("f_Description").value,
+    Category: document.getElementById("f_Category").value,
+    URL: document.getElementById("f_URL").value,
+    PublishToPublic: document.getElementById("f_PublishToPublic").checked ? "Yes" : "No",
+  };
+  try {
+    if (id) {
+      await fetch(`${SHEETDB_BASE}/DocumentID/${id}?sheet=Documents`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data })
+      });
+      documents = documents.map(d => d.DocumentID === id ? data : d);
+    } else {
+      await fetch(`${SHEETDB_BASE}?sheet=Documents`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [data] })
+      });
+      documents.push(data);
+    }
+    closeModal();
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PENDING SUBMISSIONS TAB — resident self-updates queued for board review
+// ══════════════════════════════════════════════════════════════════════════
+function renderPending() {
+  const pending = pendingSubmissions.filter(p => p.Status === "Pending" || !p.Status);
+
+  return `
+    ${sheetsNotice("PendingSubmissions")}
+    <div class="section-header">
+      <div><h2>Pending Resident Updates</h2><p>${pending.length} awaiting review</p></div>
+    </div>
+    ${pending.length === 0 ? `<div class="empty-state"><p>No pending submissions. When residents update their info on the public site, requests will appear here for approval.</p></div>` : ""}
+    ${pending.map(p => {
+      const current = residents.find(r => r.PropertyID === p.PropertyID) || {};
+      return `
+      <div class="pending-card">
+        <div class="pending-header">
+          <div class="pending-address">${esc(p.Address)}</div>
+          ${badge("Pending")}
+        </div>
+        <div class="pending-diff">
+          <div class="pending-diff-col"><label>Current on file</label>
+            ${esc(current.ResidentName || "—")}<br>${esc(current.Phone || "—")}<br>${esc(current.Email || "—")}
+          </div>
+          <div class="pending-diff-col"><label>Submitted by resident</label>
+            ${esc(p.SubmittedName || "—")}<br>${esc(p.Phone || "—")}<br>${esc(p.Email || "—")}
+          </div>
+        </div>
+        ${p.Notes ? `<div class="td-muted" style="margin-bottom:0.8rem;">Note: ${esc(p.Notes)}</div>` : ""}
+        <div class="pending-actions">
+          <button class="btn btn-brass btn-sm" onclick="approveSubmission(${p.SubmissionID})">✓ Approve &amp; Update Directory</button>
+          <button class="btn btn-ghost btn-sm btn-red" onclick="rejectSubmission(${p.SubmissionID})">✕ Reject</button>
+        </div>
+      </div>`;
+    }).join("")}`;
+}
+
+async function approveSubmission(id) {
+  const p = pendingSubmissions.find(x => x.SubmissionID === id);
+  if (!p) return;
+  const updatedResident = {
+    ResidentName: p.SubmittedName || undefined,
+    Phone: p.Phone || undefined,
+    Email: p.Email || undefined,
+    MoveInDate: p.MoveInDate || undefined,
+    ShowNamePublic: p.ShowName || undefined,
+    ShowPhonePublic: p.ShowPhone || undefined,
+    ShowEmailPublic: p.ShowEmail || undefined,
+  };
+  Object.keys(updatedResident).forEach(k => updatedResident[k] === undefined && delete updatedResident[k]);
+  try {
+    await fetch(`${SHEETDB_BASE}/PropertyID/${p.PropertyID}?sheet=Residents`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: updatedResident })
+    });
+    await fetch(`${SHEETDB_BASE}/SubmissionID/${id}?sheet=PendingSubmissions`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: { Status: "Approved", ReviewedAt: today() } })
+    });
+    residents = residents.map(r => r.PropertyID === p.PropertyID ? { ...r, ...updatedResident } : r);
+    pendingSubmissions = pendingSubmissions.map(x => x.SubmissionID === id ? { ...x, Status: "Approved", ReviewedAt: today() } : x);
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+async function rejectSubmission(id) {
+  try {
+    await fetch(`${SHEETDB_BASE}/SubmissionID/${id}?sheet=PendingSubmissions`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: { Status: "Rejected", ReviewedAt: today() } })
+    });
+    pendingSubmissions = pendingSubmissions.map(x => x.SubmissionID === id ? { ...x, Status: "Rejected", ReviewedAt: today() } : x);
+    render();
+  } catch (err) {
+    alert("Couldn't save to Google Sheets: " + err.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// NAV + ROOT RENDER
+// ══════════════════════════════════════════════════════════════════════════
+function render() {
+  const pendingCount = pendingSubmissions.filter(p => p.Status === "Pending" || !p.Status).length;
+  const unresolvedViolations = violations.filter(v => v.Resolved !== "Yes").length;
+
+  const tabs = [
+    { id: "residents", label: "Residents", icon: "🏠" },
+    { id: "violations", label: "Violations", icon: "⚠️", count: unresolvedViolations },
+    { id: "dues", label: "Dues", icon: "💳" },
+    { id: "budget", label: "Budget", icon: "📊" },
+    { id: "announcements", label: "Announcements", icon: "📣" },
+    { id: "meetings", label: "Meetings", icon: "📅" },
+    { id: "documents", label: "Documents", icon: "📋" },
+    { id: "pending", label: "Pending", icon: "📥", count: pendingCount },
+  ];
+
+  document.getElementById("nav").innerHTML = tabs.map(t => `
+    <button class="nav-tab ${state.tab === t.id ? "active" : ""}" onclick="state.tab='${t.id}'; render();">
+      ${t.icon} ${t.label} ${t.count ? `<span class="nav-badge">${t.count}</span>` : ""}
+    </button>`).join("");
+
+  const errorBanner = loadError ? `
+    <div class="sheets-notice" style="background:linear-gradient(135deg, var(--red) 0%, #8b2a20 100%);">
+      <div class="sheets-notice-icon">⚠️</div>
+      <div>
+        <strong>Some data didn't load from Google Sheets</strong>
+        ${esc(loadError)}
+        <br><br><button class="btn btn-ghost btn-sm" onclick="loadAllData()">↻ Try Again</button>
+      </div>
+    </div>` : "";
+
+  if (!residents.length && !documents.length && !dues.length && loadError) {
+    document.getElementById("main").innerHTML = errorBanner;
+    return;
+  }
+  if (!residents.length && !loadError) {
+    document.getElementById("main").innerHTML = `<div class="empty-state"><p>Loading data from Google Sheets…</p></div>`;
+    return;
+  }
+
+  const renderers = {
+    residents: renderResidents, violations: renderViolations, dues: renderDues,
+    budget: renderBudget, announcements: renderAnnouncements, meetings: renderMeetings,
+    documents: renderDocuments, pending: renderPending,
+  };
+  document.getElementById("main").innerHTML = errorBanner + renderers[state.tab]();
+}
+
+loadAllData();
+</script>
+
+<!--
+══════════════════════════════════════════════════════════════════════════
+GOOGLE SHEETS CONNECTION — LIVE
+══════════════════════════════════════════════════════════════════════════
+This page is connected to your real Google Sheet via SheetDB:
+  Base URL: https://sheetdb.io/api/v1/zyyfhlq7zoi0d
+
+On page load, it fetches all 8 tabs in parallel (Residents, Violations,
+Dues, Budget, Announcements, Meetings, PendingSubmissions, Documents).
+Every Save button writes changes back to the matching sheet tab.
+
+A NOTE ON USAGE LIMITS
+SheetDB's free tier allows 500 requests/month. Each full page load uses
+8 requests (one per tab). That's roughly 60 page loads/month before
+hitting the ceiling — keep an eye on this if more board members start
+using the portal regularly. SheetDB's dashboard shows current usage.
+
+IF SOMETHING STOPS WORKING
+The portal will show a red error banner with a "Try Again" button if it
+can't reach the Sheet. Common causes: the SheetDB free tier limit was
+hit, a tab was renamed in the Sheet, or the Sheet's sharing settings
+changed. Check sheetdb.io's dashboard first.
+══════════════════════════════════════════════════════════════════════════
+-->
+</body>
+</html>
