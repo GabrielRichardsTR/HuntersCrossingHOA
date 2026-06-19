@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hunters Crossing — Ann Arbor, MI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest: #2c3e2d;
+    --forest-mid: #3d5240;
+    --forest-light: #4e6b52;
+    --sage: #7a9e7e;
+    --sage-light: #a8c5ab;
+    --cream: #f7f3ed;
+    --cream-dark: #ede7db;
+    --warm-white: #faf8f4;
+    --text: #1e2a1f;
+    --text-muted: #5a6b5c;
+    --gold: #c9a84c;
+    --gold-light: #e0c070;
+    --border: #d8d0c2;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--warm-white);
+    color: var(--text);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: var(--forest);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Layered organic background */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(78,107,82,0.5) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 20% 80%, rgba(44,62,45,0.8) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 100% at 50% 0%, rgba(30,42,31,0.6) 0%, transparent 70%);
+  }
+
+  /* Subtle tree silhouette texture */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 35%;
+    background: linear-gradient(to top, rgba(247,243,237,0.06) 0%, transparent 100%);
+    clip-path: polygon(0% 100%, 3% 60%, 6% 80%, 9% 45%, 12% 65%, 15% 30%, 18% 55%, 21% 20%, 24% 50%, 27% 35%, 30% 60%, 33% 25%, 36% 50%, 39% 15%, 42% 45%, 45% 30%, 48% 55%, 51% 20%, 54% 50%, 57% 35%, 60% 60%, 63% 25%, 66% 50%, 69% 40%, 72% 65%, 75% 30%, 78% 55%, 81% 45%, 84% 70%, 87% 40%, 90% 60%, 93% 35%, 96% 55%, 100% 45%, 100% 100%);
+  }
+
+  .hero-nav {
+    position: relative;
+    z-index: 10;
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .hero-nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .logo-mark {
+    width: 38px; height: 38px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+
+  .logo-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+  }
+  .logo-text span {
+    display: block;
+    font-size: 0.65rem;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+  }
+
+  .hero-nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+  .hero-nav-links a {
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .hero-nav-links a:hover { color: var(--gold-light); }
+
+  .hero-content {
+    flex: 1;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4rem 3rem 6rem;
+    max-width: 680px;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    font-weight: 300;
+    color: var(--warm-white);
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--sage-light);
+  }
+
+  .hero-desc {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.6);
+    max-width: 440px;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--gold);
+    color: var(--forest);
+    text-decoration: none;
+    padding: 0.85rem 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .hero-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .hero-cta-arrow { font-size: 1rem; transition: transform 0.2s; }
+  .hero-cta:hover .hero-cta-arrow { transform: translateX(3px); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: bounce 2.5s ease-in-out infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 5rem 3rem; }
+
+  .section-inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 24px; height: 1px;
+    background: var(--sage);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 400;
+    color: var(--forest);
+    line-height: 1.2;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-body {
+    font-size: 1rem;
+    color: var(--text-muted);
+    max-width: 580px;
+    line-height: 1.8;
+  }
+
+  /* ── ABOUT ── */
+  .about { background: var(--warm-white); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 3rem;
+  }
+
+  .about-visual {
+    position: relative;
+  }
+
+  .about-card {
+    background: var(--forest);
+    border-radius: 2px;
+    padding: 3rem 2.5rem;
+    color: var(--warm-white);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+
+  .about-card-stat {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem;
+    font-weight: 300;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .about-card-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 2rem;
+  }
+  .about-card-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin: 1.5rem 0;
+  }
+
+  .about-floating {
+    position: absolute;
+    bottom: -1.5rem;
+    right: -1.5rem;
+    background: var(--gold);
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--forest);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+  .about-floating strong {
+    font-size: 1.4rem;
+    display: block;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 0.15rem;
+  }
+
+  /* ── INFO CARDS ── */
+  .info { background: var(--cream); }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .info-card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .info-card:hover {
+    box-shadow: 0 8px 32px rgba(44,62,45,0.12);
+    transform: translateY(-3px);
+  }
+  .info-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 2rem; right: 2rem;
+    height: 2px;
+    background: var(--sage-light);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+    transform-origin: left;
+  }
+  .info-card:hover::after { transform: scaleX(1); }
+
+  .info-card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .info-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 0.6rem;
+  }
+  .info-card-body {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+
+  /* ── BOARD ── */
+  .board { background: var(--warm-white); }
+
+  .board-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .board-member {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    background: var(--cream);
+    position: relative;
+  }
+  .board-member::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--forest);
+  }
+  .board-member-role {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.4rem;
+  }
+  .board-member-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--forest);
+  }
+
+  /* ── CONTACT ── */
+  .contact {
+    background: var(--forest);
+    text-align: center;
+  }
+  .contact .section-title { color: var(--warm-white); }
+  .contact .section-body { color: rgba(255,255,255,0.55); max-width: 480px; margin: 0 auto 2.5rem; }
+  .contact .section-label { justify-content: center; color: var(--gold); }
+  .contact .section-label::before { background: var(--gold); }
+
+  .contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: transparent;
+    color: var(--gold-light);
+    border: 1px solid var(--gold);
+    text-decoration: none;
+    padding: 1rem 2.5rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .contact-btn:hover {
+    background: var(--gold);
+    color: var(--forest);
+  }
+
+  .contact-note {
+    margin-top: 2rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #1a2419;
+    padding: 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer p {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.05em;
+  }
+  .footer-board-link {
+    font-size: 0.72rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .footer-board-link:hover { opacity: 1; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 48px; height: 1px;
+    background: var(--gold);
+    margin: 1.5rem 0;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-eyebrow { animation: fadeUp 0.6s ease both; }
+  .hero-title { animation: fadeUp 0.6s 0.15s ease both; }
+  .hero-desc { animation: fadeUp 0.6s 0.28s ease both; }
+  .hero-cta { animation: fadeUp 0.6s 0.4s ease both; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    section { padding: 3.5rem 1.5rem; }
+    .hero-content { padding: 3rem 1.5rem 5rem; }
+    .hero-nav { padding: 1.5rem; }
+    .hero-nav-links { display: none; }
+    .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .info-grid { grid-template-columns: 1fr; }
+    footer { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ─────────────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <nav class="hero-nav">
+    <div class="hero-nav-logo">
+      <div class="logo-mark">🌲</div>
+      <div class="logo-text">
+        Hunters Crossing
+        <span>Ann Arbor, MI</span>
+      </div>
+    </div>
+    <ul class="hero-nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#info">Community</a></li>
+      <li><a href="#board">Board</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Neighbors &amp; Community</div>
+    <h1 class="hero-title">
+      Welcome to<br><em>Hunters Crossing</em>
+    </h1>
+    <p class="hero-desc">
+      A quiet residential neighborhood in Ann Arbor, Michigan.
+      We're a small community that looks out for one another.
+    </p>
+    <a href="#contact" class="hero-cta">
+      Get in Touch <span class="hero-cta-arrow">→</span>
+    </a>
+  </div>
+
+  <div class="hero-scroll">▾ scroll</div>
+</section>
+
+<!-- ── ABOUT ─────────────────────────────────────────────────────────────────── -->
+<section class="about" id="about">
+  <div class="section-inner">
+    <div class="section-label">Our Neighborhood</div>
+    <h2 class="section-title">A community worth<br>coming home to</h2>
+    <p class="section-body">
+      Hunters Crossing is a small, informal homeowner community in Ann Arbor.
+      We don't have a lot of rules — just neighbors who care about keeping
+      our street a great place to live.
+    </p>
+
+    <div class="about-grid">
+      <div>
+        <div class="divider"></div>
+        <p class="section-body" style="margin-bottom: 1.5rem;">
+          The HOA exists to coordinate the things that benefit everyone —
+          shared maintenance, community communication, and making sure
+          new neighbors feel welcome.
+        </p>
+        <p class="section-body">
+          Have a question about the neighborhood? The board is here to help.
+          Reach us anytime at
+          <a href="mailto:hunterstrailannarbor@gmail.com" style="color: var(--forest-light); font-weight: 500;">hunterstrailannarbor@gmail.com</a>.
+        </p>
+      </div>
+      <div class="about-visual">
+        <div class="about-card">
+          <div class="about-card-stat">Ann<br>Arbor</div>
+          <div class="about-card-label">Washtenaw County, Michigan</div>
+          <div class="about-card-divider"></div>
+          <div style="font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.7;">
+            🌳 &nbsp;Tree-lined streets<br>
+            🏘 &nbsp;Friendly neighbors<br>
+            📬 &nbsp;Easy to reach board
+          </div>
+        </div>
+        <div class="about-floating">
+          <strong>HOA</strong>
+          Est.<br>community
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── INFO ───────────────────────────────────────────────────────────────────── -->
+<section class="info" id="info">
+  <div class="section-inner">
+    <div class="section-label">Helpful Information</div>
+    <h2 class="section-title">What neighbors<br>ask about most</h2>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <span class="info-card-icon">🗑</span>
+        <div class="info-card-title">Trash &amp; Recycling</div>
+        <div class="info-card-body">
+          Trash pickup is every <strong>Monday</strong>.<br>
+          Recycling is every <strong>other Monday</strong>.<br>
+          Bins should be out by 7am and returned by end of day.
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">🏡</span>
+        <div class="info-card-title">Property Changes</div>
+        <div class="info-card-body">
+          Planning a fence, shed, or exterior modification?
+          Email the board before starting so we can make sure
+          everything goes smoothly with the city.
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">💰</span>
+        <div class="info-card-title">HOA Dues</div>
+        <div class="info-card-body">
+          Annual dues help cover shared neighborhood costs.
+          Questions about your balance or payment?
+          Contact the board treasurer directly.
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">🚗</span>
+        <div class="info-card-title">Parking</div>
+        <div class="info-card-body">
+          Please keep commercial vehicles and long-term
+          street parking to a minimum out of courtesy
+          for your neighbors.
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">🌿</span>
+        <div class="info-card-title">Lawn &amp; Landscaping</div>
+        <div class="info-card-body">
+          Keeping lawns tidy during the growing season
+          helps maintain property values for everyone.
+          The board appreciates your effort.
+        </div>
+      </div>
+      <div class="info-card">
+        <span class="info-card-icon">🆘</span>
+        <div class="info-card-title">Emergencies</div>
+        <div class="info-card-body">
+          For any emergency, call <strong>911</strong>.<br>
+          For non-urgent neighborhood issues,
+          email the board and we'll follow up promptly.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BOARD ──────────────────────────────────────────────────────────────────── -->
+<section class="board" id="board">
+  <div class="section-inner">
+    <div class="section-label">Leadership</div>
+    <h2 class="section-title">Your HOA Board</h2>
+    <p class="section-body">
+      The board is made up of volunteer neighbors who keep things running.
+      We're approachable — don't hesitate to reach out.
+    </p>
+
+    <div class="board-list">
+      <div class="board-member">
+        <div class="board-member-role">President</div>
+        <div class="board-member-name">Board President</div>
+      </div>
+      <div class="board-member">
+        <div class="board-member-role">Treasurer</div>
+        <div class="board-member-name">Board Treasurer</div>
+      </div>
+      <div class="board-member">
+        <div class="board-member-role">Secretary</div>
+        <div class="board-member-name">Board Secretary</div>
+      </div>
+      <div class="board-member">
+        <div class="board-member-role">Member at Large</div>
+        <div class="board-member-name">Board Member</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ────────────────────────────────────────────────────────────────── -->
+<section class="contact" id="contact">
+  <div class="section-inner">
+    <div class="section-label">Reach Out</div>
+    <h2 class="section-title">We're easy to find</h2>
+    <p class="section-body">
+      Questions, concerns, or just want to introduce yourself?
+      The board checks this inbox regularly and will get back to you.
+    </p>
+    <a href="mailto:hunterstrailannarbor@gmail.com" class="contact-btn">
+      ✉ &nbsp;hunterstrailannarbor@gmail.com
+    </a>
+    <p class="contact-note">We typically respond within 1–2 business days.</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────────────── -->
+<footer>
+  <p>© 2025 Hunters Crossing HOA · Ann Arbor, Michigan</p>
+  <a href="board-portal.html" class="footer-board-link">Board Portal →</a>
+</footer>
+
+</body>
+</html>
