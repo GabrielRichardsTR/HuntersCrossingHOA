@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hunters Crossing — Neighborhood Site (Preview)</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=DM+Sans:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'DM Sans', sans-serif; }
+    #root { min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useMemo, useEffect, useRef } = React;
+
+const residents = [
+  { id: 1,  address: "221 Hunters Trail", name: "Steve & Martha Angerman",          phone: "",             email: "angermansp@aol.com",     showName: true, showPhone: false, showEmail: true  },
+  { id: 3,  address: "228 Hunters Trail", name: "Peter Falkenstein & Kathi Tarrant", phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 4,  address: "233 Hunters Trail", name: "Siena Whitham & Daniel Obrien",     phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 5,  address: "240 Hunters Trail", name: "Paul & Katherine Williams",          phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 6,  address: "245 Hunters Trail", name: "Mihai Burzo & Rada Mihalcea",        phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 7,  address: "254 Hunters Trail", name: "Charles Bruce",                      phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 8,  address: "267 Hunters Trail", name: "John & Denise Toomesian",            phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 9,  address: "270 Hunters Trail", name: "Kristin Cox",                        phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 10, address: "292 Hunters Trail", name: "John & Linda Earl",                  phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 11, address: "295 Hunters Trail", name: "Xin Yan Hu",                         phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 12, address: "303 Hunters Trail", name: "Andy & Jennifer Tankanow",           phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 13, address: "314 Hunters Trail", name: "Mike & Lorraine Lewis",              phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 14, address: "321 Hunters Trail", name: "Bryan & Steve Thelen-Perry",         phone: "",             email: "sthelenperry@gmail.com", showName: true, showPhone: false, showEmail: true  },
+  { id: 15, address: "339 Hunters Trail", name: "Richard Weiss",                      phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 16, address: "352 Hunters Trail", name: "Lutz & Katja Kettenhofen",           phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 17, address: "357 Hunters Trail", name: "Gabriel & Cari Richards",            phone: "734-323-0627", email: "glrichar@gmail.com",     showName: true, showPhone: true,  showEmail: true  },
+  { id: 18, address: "375 Hunters Trail", name: "Matt & Devon Adams",                 phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 19, address: "378 Hunters Trail", name: "Lisa Yeung",                         phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 20, address: "392 Hunters Trail", name: "Tom & Ingela Oginsky",               phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+  { id: 21, address: "393 Hunters Trail", name: "Susan Simon",                        phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
+];
+
+const announcements = [
+  { id: 1, title: "Welcome to the 2026 Season", body: "The board hopes everyone had a wonderful winter. Please remember annual dues of $400 are due by March 31st.", date: "2026-01-15", type: "announcement" },
+];
+const meetings = [
+  // { id: 1, date: "2026-XX-XX", time: "7:00 PM", location: "303 Hunters Trail", notes: "Annual general meeting — all residents welcome" },
+];
+const docs = [
+  { id: 1, title: "CC&Rs",  url: "", description: "Covenants, Conditions & Restrictions" },
+  { id: 2, title: "Bylaws", url: "", description: "Hunters Crossing HOA Bylaws" },
+];
+const BOARD = [
+  { role: "President",  name: "Steven Thelen-Perry", email: "sthelenperry@gmail.com",    address: "321 Hunters Trail" },
+  { role: "Secretary",  name: "Jennifer Tankanow",  email: "jennifertankanow@gmail.com", address: "303 Hunters Trail" },
+  { role: "Treasurer",  name: "Gabriel Richards",   email: "glrichar@gmail.com",         address: "357 Hunters Trail", phone: "734-323-0627" },
+];
+
+// ── Styles ────────────────────────────────────────────────────────────────────
+const S = {
+  label:  { display:"block", fontSize:11, fontWeight:600, color:"#6b7280", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.05em" },
+  input:  { width:"100%", padding:"8px 11px", borderRadius:7, border:"1.5px solid #d1d5db", fontSize:13, fontFamily:"inherit", outline:"none", background:"#fafafa", boxSizing:"border-box" },
+  select: { width:"100%", padding:"8px 11px", borderRadius:7, border:"1.5px solid #d1d5db", fontSize:13, fontFamily:"inherit", outline:"none", background:"#fafafa", boxSizing:"border-box" },
+  addBtn: { fontSize:12, padding:"4px 10px", borderRadius:6, border:"1px dashed #166534", background:"#f0fdf4", color:"#166534", cursor:"pointer", fontFamily:"inherit" },
+  removeBtn: { fontSize:11, padding:"3px 8px", borderRadius:5, border:"1px solid #fca5a5", background:"#fff1f1", color:"#dc2626", cursor:"pointer", fontFamily:"inherit", flexShrink:0 },
+};
+
+function Toggle({ checked, onChange, label }) {
+  return (
+    <label style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer", userSelect:"none" }}>
+      <div onClick={() => onChange(!checked)} style={{ width:34, height:19, borderRadius:99, background:checked?"#166534":"#d1d5db", position:"relative", transition:"background 0.2s", flexShrink:0 }}>
+        <div style={{ position:"absolute", top:2, left:checked?16:2, width:15, height:15, borderRadius:"50%", background:"#fff", transition:"left 0.2s", boxShadow:"0 1px 3px rgba(0,0,0,0.2)" }}/>
+      </div>
+      <span style={{ fontSize:12, color:"#374151" }}>{label}</span>
+    </label>
+  );
+}
+
+function ListEditor({ items, onChange, fields, addLabel, emptyItem }) {
+  const add    = () => onChange([...items, { ...emptyItem, _id: Date.now() }]);
+  const remove = i  => onChange(items.filter((_,idx) => idx !== i));
+  const update = (i,k,v) => onChange(items.map((it,idx) => idx===i ? {...it,[k]:v} : it));
+  return (
+    <div>
+      {items.map((item,i) => (
+        <div key={item._id||i} style={{ display:"grid", gridTemplateColumns:`repeat(${fields.length},1fr) auto`, gap:"6px 8px", marginBottom:8, alignItems:"end" }}>
+          {fields.map(f => (
+            <div key={f.key}>
+              <label style={S.label}>{f.label}</label>
+              {f.options
+                ? <select value={item[f.key]||""} onChange={e=>update(i,f.key,e.target.value)} style={S.select}><option value="">—</option>{f.options.map(o=><option key={o} value={o}>{o}</option>)}</select>
+                : <input type={f.type||"text"} value={item[f.key]||""} placeholder={f.placeholder||""} onChange={e=>update(i,f.key,e.target.value)} style={S.input}/>}
+            </div>
+          ))}
+          <button onClick={()=>remove(i)} style={{...S.removeBtn,marginTop:18}}>✕</button>
+        </div>
+      ))}
+      <button onClick={add} style={S.addBtn}>+ {addLabel}</button>
+    </div>
+  );
+}
+
+// ── Edit Request Modal ────────────────────────────────────────────────────────
+function EditModal({ resident, onSubmit, onClose }) {
+  const [form, setForm] = useState({
+    name:              resident.name  || "",
+    phone:             resident.phone || "",
+    email:             resident.email || "",
+    moveIn:            "",
+    rentalStatus:      "owner",
+    tenantName:        "",
+    tenantPhone:       "",
+    landlordContact:   "",
+    showName:          resident.showName  ?? true,
+    showPhone:         resident.showPhone ?? false,
+    showEmail:         resident.showEmail ?? false,
+    children:          [],
+    pets:              [],
+    emergencyContacts: [],
+    notes:             "",
+  });
+  const [submitted, setSubmitted] = useState(false);
+  const set = (k,v) => setForm(f => ({...f,[k]:v}));
+
+  const handleSubmit = () => {
+    if (!form.name.trim()) { alert("Please enter your name."); return; }
+    onSubmit({ ...form, address: resident.address, id: resident.id, submittedAt: new Date().toISOString() });
+    setSubmitted(true);
+  };
+
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }} onClick={onClose}>
+      <div style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:580, maxHeight:"90vh", overflowY:"auto", boxShadow:"0 20px 60px rgba(0,0,0,0.25)" }} onClick={e=>e.stopPropagation()}>
+
+        {/* Modal header */}
+        <div style={{ background:"linear-gradient(135deg,#14532d,#166534)", padding:"20px 24px", borderRadius:"16px 16px 0 0", color:"#fff", display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+          <div>
+            <div style={{ fontFamily:"'Lora',serif", fontSize:18, fontWeight:700 }}>Update My Info</div>
+            <div style={{ fontSize:13, opacity:0.8, marginTop:2 }}>{resident.address} · Ann Arbor, MI 48103</div>
+          </div>
+          <button onClick={onClose} style={{ background:"rgba(255,255,255,0.2)", border:"none", color:"#fff", fontSize:18, cursor:"pointer", borderRadius:8, width:32, height:32, display:"flex", alignItems:"center", justifyContent:"center" }}>✕</button>
+        </div>
+
+        {submitted ? (
+          <div style={{ padding:"40px 28px", textAlign:"center" }}>
+            <div style={{ fontSize:48, marginBottom:12 }}>✅</div>
+            <div style={{ fontFamily:"'Lora',serif", fontSize:20, fontWeight:700, color:"#14532d", marginBottom:8 }}>Submission Received!</div>
+            <p style={{ fontSize:14, color:"#4b5563", lineHeight:1.6, marginBottom:20 }}>
+              Thanks! The board will review your information and update the directory shortly. If you have any questions, reach out to <a href="mailto:sthelenperry@gmail.com" style={{color:"#166534"}}>sthelenperry@gmail.com</a>.
+            </p>
+            <button onClick={onClose} style={{ padding:"10px 28px", borderRadius:8, border:"none", background:"#166534", color:"#fff", fontSize:14, fontWeight:600, cursor:"pointer" }}>Close</button>
+          </div>
+        ) : (
+          <div style={{ padding:"22px 24px" }}>
+
+            <div style={{ padding:"10px 14px", background:"#fef3c7", borderRadius:8, border:"1px solid #fde68a", fontSize:13, color:"#92400e", marginBottom:18 }}>
+              ⏳ Your submission will be reviewed by the board before appearing publicly. Only information you choose to share below will be visible to neighbors.
+            </div>
+
+            {/* Contact */}
+            <div style={{ fontSize:11, fontWeight:700, color:"#166534", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>👤 Your Info</div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px 14px", marginBottom:16 }}>
+              <div style={{ gridColumn:"1/-1" }}>
+                <label style={S.label}>Full Name *</label>
+                <input type="text" value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Your full name" style={S.input}/>
+              </div>
+              <div>
+                <label style={S.label}>Phone</label>
+                <input type="tel" value={form.phone} onChange={e=>set("phone",e.target.value)} placeholder="(734) 555-0000" style={S.input}/>
+              </div>
+              <div>
+                <label style={S.label}>Email</label>
+                <input type="email" value={form.email} onChange={e=>set("email",e.target.value)} placeholder="email@example.com" style={S.input}/>
+              </div>
+              <div>
+                <label style={S.label}>Move-in Date</label>
+                <input type="date" value={form.moveIn} onChange={e=>set("moveIn",e.target.value)} style={S.input}/>
+              </div>
+            </div>
+
+            {/* Public visibility */}
+            <div style={{ fontSize:11, fontWeight:700, color:"#166534", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>🌐 What to Show Publicly</div>
+            <div style={{ display:"flex", gap:16, flexWrap:"wrap", padding:"12px 14px", background:"#f0fdf4", borderRadius:8, border:"1px solid #bbf7d0", marginBottom:16 }}>
+              <Toggle checked={form.showName}  onChange={v=>set("showName",v)}  label="Show my name"/>
+              <Toggle checked={form.showPhone} onChange={v=>set("showPhone",v)} label="Show my phone"/>
+              <Toggle checked={form.showEmail} onChange={v=>set("showEmail",v)} label="Show my email"/>
+            </div>
+
+            {/* Occupancy */}
+            <div style={{ fontSize:11, fontWeight:700, color:"#166534", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>🏠 Occupancy</div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"10px 14px", marginBottom:16 }}>
+              <div style={{ gridColumn:"1/-1" }}>
+                <label style={S.label}>Status</label>
+                <select value={form.rentalStatus} onChange={e=>set("rentalStatus",e.target.value)} style={S.select}>
+                  <option value="owner">Owner-Occupied</option>
+                  <option value="tenant">Rental / Tenant</option>
+                  <option value="vacant">Vacant</option>
+                </select>
+              </div>
+              {form.rentalStatus==="tenant" && <>
+                <div>
+                  <label style={S.label}>Tenant Name</label>
+                  <input type="text" value={form.tenantName} onChange={e=>set("tenantName",e.target.value)} placeholder="Tenant full name" style={S.input}/>
+                </div>
+                <div>
+                  <label style={S.label}>Tenant Phone</label>
+                  <input type="tel" value={form.tenantPhone} onChange={e=>set("tenantPhone",e.target.value)} placeholder="(734) 555-0000" style={S.input}/>
+                </div>
+                <div style={{ gridColumn:"1/-1" }}>
+                  <label style={S.label}>Landlord Contact</label>
+                  <input type="text" value={form.landlordContact} onChange={e=>set("landlordContact",e.target.value)} placeholder="Name or phone" style={S.input}/>
+                </div>
+              </>}
+            </div>
+
+            {/* Children */}
+            <div style={{ fontSize:11, fontWeight:700, color:"#166534", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>👧 Children <span style={{ fontSize:10, fontWeight:400, color:"#9ca3af", textTransform:"none" }}>(for board records only — not shown publicly)</span></div>
+            <div style={{ marginBottom:16 }}>
+              <ListEditor items={form.children} onChange={v=>set("children",v)} addLabel="Add child" emptyItem={{name:"",age:""}}
+                fields={[{key:"name",label:"Name",placeholder:"Child's name"},{key:"age",label:"Age",type:"number",placeholder:"Age"}]}/>
+            </div>
+
+            {/* Pets */}
+            <div style={{ fontSize:11, fontWeight:700, color:"#166534", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>🐾 Pets</div>
+            <div style={{ marginBottom:16 }}>
+              <ListEditor items={form.pets} onChange={v=>set("pets",v)} addLabel="Add pet" emptyItem={{name:"",type:"",breed:""}}
+                fields={[{key:"name",label:"Name",placeholder:"Pet name"},{key:"type",label:"Type",options:["Dog","Cat","Bird","Fish","Other"]},{key:"breed",label:"Breed",placeholder:"Breed"}]}/>
+            </div>
+
+            {/* Emergency contacts */}
+            <div style={{ fontSize:11, fontWeight:700, color:"#166534", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>🚨 Emergency Contacts <span style={{ fontSize:10, fontWeight:400, color:"#9ca3af", textTransform:"none" }}>(board records only)</span></div>
+            <div style={{ marginBottom:16 }}>
+              <ListEditor items={form.emergencyContacts} onChange={v=>set("emergencyContacts",v)} addLabel="Add contact" emptyItem={{name:"",phone:"",relationship:""}}
+                fields={[{key:"name",label:"Name",placeholder:"Full name"},{key:"phone",label:"Phone",type:"tel",placeholder:"(734) 555-0000"},{key:"relationship",label:"Relationship",placeholder:"e.g. Sister"}]}/>
+            </div>
+
+            {/* Notes */}
+            <div style={{ marginBottom:20 }}>
+              <label style={S.label}>Additional Notes</label>
+              <textarea value={form.notes} onChange={e=>set("notes",e.target.value)} placeholder="Anything else you'd like the board to know…"
+                style={{ ...S.input, minHeight:64, resize:"vertical" }}/>
+            </div>
+
+            <div style={{ display:"flex", gap:10, justifyContent:"flex-end", borderTop:"1px solid #f3f4f6", paddingTop:16 }}>
+              <button onClick={onClose} style={{ padding:"8px 20px", borderRadius:8, border:"1px solid #d1d5db", background:"#fff", fontSize:13, cursor:"pointer", color:"#374151" }}>Cancel</button>
+              <button onClick={handleSubmit} style={{ padding:"8px 24px", borderRadius:8, border:"none", background:"#166534", color:"#fff", fontSize:13, fontWeight:600, cursor:"pointer" }}>Submit for Review</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Resident Card ─────────────────────────────────────────────────────────────
+function ResidentCard({ r, onRequestEdit }) {
+  const hasContact = (r.showPhone&&r.phone) || (r.showEmail&&r.email);
+  return (
+    <div style={{ background:"#fff", border:"1.5px solid #e5e7eb", borderRadius:12, padding:"14px 18px", boxShadow:"0 1px 3px rgba(0,0,0,0.04)", display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, flexWrap:"wrap" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:10, minWidth:0 }}>
+        <div style={{ width:36, height:36, borderRadius:"50%", background:"#f0fdf4", border:"1.5px solid #bbf7d0", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+          <span style={{ fontFamily:"'DM Mono',monospace", fontSize:11, fontWeight:700, color:"#166534" }}>{r.address.split(" ")[0]}</span>
+        </div>
+        <div>
+          <div style={{ fontFamily:"'Lora',serif", fontSize:15, fontWeight:600, color:"#1a2e1a" }}>
+            {r.showName && r.name ? r.name : <span style={{ color:"#9ca3af", fontStyle:"italic", fontWeight:400 }}>Resident</span>}
+          </div>
+          <div style={{ fontSize:12, color:"#6b7280" }}>{r.address}, Ann Arbor MI 48103</div>
+        </div>
+      </div>
+      <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+        {hasContact && <>
+          {r.showPhone&&r.phone && <a href={`tel:${r.phone}`} style={{ fontSize:13, color:"#166534", textDecoration:"none", background:"#f0fdf4", padding:"4px 10px", borderRadius:99, border:"1px solid #bbf7d0" }}>📞 {r.phone}</a>}
+          {r.showEmail&&r.email && <a href={`mailto:${r.email}`} style={{ fontSize:13, color:"#166534", textDecoration:"none", background:"#f0fdf4", padding:"4px 10px", borderRadius:99, border:"1px solid #bbf7d0" }}>✉️ {r.email}</a>}
+        </>}
+        <button onClick={() => onRequestEdit(r)} style={{ fontSize:12, padding:"4px 12px", borderRadius:7, border:"1px solid #d1d5db", background:"#f9fafb", color:"#374151", cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>
+          ✏️ Update my info
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function AnnouncementBadge({ type }) {
+  const map = { announcement:["#166534","#dcfce7"], reminder:["#92400e","#fef3c7"], alert:["#dc2626","#fee2e2"] };
+  const [color,bg] = map[type]||map.announcement;
+  return <span style={{ fontSize:10, fontWeight:700, color, background:bg, borderRadius:99, padding:"1px 7px", textTransform:"uppercase" }}>{type}</span>;
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+function App() {
+  const [tab,          setTab]          = useState("home");
+  const [search,       setSearch]       = useState("");
+  const [editResident, setEditResident] = useState(null);   // opens modal
+  const [pendingQueue, setPendingQueue] = useState([]);     // submitted but not yet approved
+
+  const filteredResidents = useMemo(() =>
+    residents.filter(r => {
+      const q = search.toLowerCase();
+      return !q || r.address.toLowerCase().includes(q) || (r.showName && r.name.toLowerCase().includes(q));
+    }), [search]);
+
+  const handleSubmit = (submission) => {
+    setPendingQueue(q => [...q, { ...submission, _qid: Date.now() }]);
+  };
+
+  const roleColors = { President:"#14532d", Secretary:"#1e40af", Treasurer:"#92400e" };
+  const roleBg     = { President:"#dcfce7", Secretary:"#dbeafe", Treasurer:"#fef3c7" };
+  const TABS = [["home","🏡 Home"],["directory","👋 Neighbors"],["meetings","📅 Meetings"],["docs","📄 Documents"]];
+
+  return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(160deg,#f0fdf4 0%,#f9fafb 60%,#ecfdf5 100%)", fontFamily:"'DM Sans',sans-serif", padding:"0 0 60px 0" }}>
+
+      {editResident && (
+        <EditModal
+          resident={editResident}
+          onSubmit={handleSubmit}
+          onClose={() => setEditResident(null)}
+        />
+      )}
+
+      {/* Header */}
+      <div style={{ background:"linear-gradient(135deg,#14532d 0%,#166534 60%,#15803d 100%)", padding:"28px 32px 0", color:"#fff" }}>
+        <div style={{ maxWidth:820, margin:"0 auto" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+            <div style={{ fontSize:11, letterSpacing:"0.15em", textTransform:"uppercase", opacity:0.7, marginBottom:4 }}>Hunters Crossing · Ann Arbor, MI 48103</div>
+            <a href="board-portal.html" style={{ fontSize:11, color:"rgba(255,255,255,0.55)", textDecoration:"none", letterSpacing:"0.06em", marginTop:2, transition:"color 0.15s" }}
+              onMouseEnter={e=>e.target.style.color="rgba(255,255,255,0.9)"}
+              onMouseLeave={e=>e.target.style.color="rgba(255,255,255,0.55)"}>
+              Board Login →
+            </a>
+          </div>
+          <h1 style={{ fontFamily:"'Lora',serif", fontSize:28, fontWeight:700, margin:"0 0 4px", letterSpacing:"-0.01em" }}>Welcome to Hunters Crossing</h1>
+          <p style={{ fontSize:14, opacity:0.85, margin:"0 0 18px", maxWidth:520 }}>A friendly neighborhood of 20 homes on Ann Arbor's west side. Est. ~1998.</p>
+          <div style={{ display:"flex", gap:4 }}>
+            {TABS.map(([key,label]) => (
+              <button key={key} onClick={()=>setTab(key)} style={{ padding:"8px 18px", borderRadius:"8px 8px 0 0", border:"none", background:tab===key?"#f0fdf4":"rgba(255,255,255,0.15)", color:tab===key?"#166534":"#fff", fontWeight:tab===key?700:400, fontSize:14, cursor:"pointer", fontFamily:"inherit", transition:"background 0.15s" }}>{label}</button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ maxWidth:820, margin:"0 auto", padding:"24px 16px 0" }}>
+
+        {/* ── Home ── */}
+        {tab==="home" && (
+          <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
+
+            {/* Welcome */}
+            <div style={{ background:"#fff", borderRadius:14, padding:"28px 32px", border:"1.5px solid #bbf7d0", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16 }}>
+                <span style={{ fontSize:28 }}>🏡</span>
+                <div>
+                  <h2 style={{ fontFamily:"'Lora',serif", fontSize:22, fontWeight:700, color:"#14532d", margin:0 }}>Welcome to Hunters Crossing</h2>
+                  <div style={{ fontSize:13, color:"#6b7280", marginTop:2 }}>Hunters Trail · Ann Arbor, MI 48103</div>
+                </div>
+              </div>
+              <p style={{ fontSize:15, lineHeight:1.75, color:"#374151", margin:"0 0 12px" }}>
+                Hunters Crossing is a warm and welcoming neighborhood of 20 single-family homes tucked along Hunters Trail on Ann Arbor's west side. Established in the late 1990s, our community is known for its mature trees, well-kept homes, and the genuine neighborly spirit that makes it a wonderful place to put down roots. Whether you're a longtime resident or just getting settled, you'll quickly find that Hunters Crossing is a place where neighbors look out for one another, kids play freely in the cul-de-sac, and friendly waves are the norm.
+              </p>
+              <p style={{ fontSize:15, lineHeight:1.75, color:"#374151", margin:"0 0 20px" }}>
+                Our Homeowners Association exists to maintain the character and quality of life that makes this neighborhood special. Annual dues support shared lighting, seasonal maintenance, and community events. The board is made up of volunteer residents who are committed to transparent communication, fair governance, and keeping Hunters Crossing the kind of place everyone is proud to call home.
+              </p>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12 }}>
+                {[["🏠","20","Properties"],["📅","Est. ~1998","Built"],["💰","$400","Annual Dues"]].map(([icon,val,label]) => (
+                  <div key={label} style={{ background:"#f9fafb", borderRadius:10, padding:"14px", textAlign:"center", border:"1px solid #e5e7eb" }}>
+                    <div style={{ fontSize:22 }}>{icon}</div>
+                    <div style={{ fontFamily:"'Lora',serif", fontSize:20, fontWeight:700, color:"#14532d", margin:"4px 0 2px" }}>{val}</div>
+                    <div style={{ fontSize:11, color:"#6b7280", textTransform:"uppercase", letterSpacing:"0.05em" }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Info */}
+            <div style={{ background:"#fff", borderRadius:14, padding:"22px 24px", border:"1.5px solid #e5e7eb", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+              <h2 style={{ fontFamily:"'Lora',serif", fontSize:18, fontWeight:700, color:"#14532d", margin:"0 0 14px" }}>📋 Neighborhood Quick Info</h2>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:10 }}>
+                {[
+                  { icon:"🗑️", label:"Trash Pickup",     value:"Every Thursday" },
+                  { icon:"♻️", label:"Recycling Pickup", value:"Every Thursday" },
+                  { icon:"💰", label:"Annual HOA Dues",  value:"$400 · Due March 31" },
+                  { icon:"📬", label:"Board Contact",    value:"hunterstrailannarbor@gmail.com", href:"mailto:hunterstrailannarbor@gmail.com" },
+                ].map(item => (
+                  <div key={item.label} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:10, background:"#f9fafb", border:"1px solid #f3f4f6" }}>
+                    <span style={{ fontSize:22, flexShrink:0 }}>{item.icon}</span>
+                    <div>
+                      <div style={{ fontSize:11, color:"#6b7280", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:2 }}>{item.label}</div>
+                      {item.href
+                        ? <a href={item.href} style={{ fontSize:14, fontWeight:600, color:"#14532d", textDecoration:"none" }}>{item.value}</a>
+                        : <div style={{ fontSize:14, fontWeight:600, color:"#14532d" }}>{item.value}</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Announcements */}
+            <div style={{ background:"#fff", borderRadius:14, padding:"22px 24px", border:"1.5px solid #bbf7d0", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+              <h2 style={{ fontFamily:"'Lora',serif", fontSize:18, fontWeight:700, color:"#14532d", margin:"0 0 14px" }}>📢 Announcements</h2>
+              <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                {announcements.map(a => (
+                  <div key={a.id} style={{ borderLeft:"3px solid #4ade80", paddingLeft:14 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
+                      <span style={{ fontWeight:600, fontSize:15, color:"#1a2e1a" }}>{a.title}</span>
+                      <AnnouncementBadge type={a.type}/>
+                    </div>
+                    {a.date&&<div style={{ fontSize:11, color:"#9ca3af", marginBottom:4 }}>📅 {a.date}</div>}
+                    <p style={{ fontSize:14, color:"#4b5563", lineHeight:1.6, margin:0 }}>{a.body}</p>
+                  </div>
+                ))}
+                {announcements.length===0&&<div style={{ fontSize:14, color:"#9ca3af" }}>No announcements at this time.</div>}
+              </div>
+            </div>
+
+            {/* Next meeting */}
+            {meetings.length>0 && (
+              <div style={{ background:"#fff", borderRadius:14, padding:"20px 24px", border:"1.5px solid #e5e7eb", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+                <h2 style={{ fontFamily:"'Lora',serif", fontSize:18, fontWeight:700, color:"#14532d", margin:"0 0 12px" }}>📅 Next Meeting</h2>
+                <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
+                  <div style={{ background:"#f0fdf4", borderRadius:10, padding:"12px 18px", border:"1px solid #bbf7d0", textAlign:"center", minWidth:80 }}>
+                    <div style={{ fontFamily:"'Lora',serif", fontSize:22, fontWeight:700, color:"#166534" }}>{meetings[0].date.split("-")[2]}</div>
+                    <div style={{ fontSize:11, color:"#6b7280", textTransform:"uppercase" }}>{new Date(meetings[0].date+"T12:00:00").toLocaleDateString("en-US",{month:"short"})}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight:600, fontSize:15, color:"#1a2e1a" }}>{meetings[0].time}</div>
+                    {meetings[0].location&&<div style={{ fontSize:13, color:"#6b7280" }}>📍 {meetings[0].location}</div>}
+                    {meetings[0].notes&&<div style={{ fontSize:13, color:"#9ca3af", marginTop:2 }}>{meetings[0].notes}</div>}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Board */}
+            <div style={{ background:"#fff", borderRadius:14, padding:"22px 24px", border:"1.5px solid #e5e7eb", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+              <h2 style={{ fontFamily:"'Lora',serif", fontSize:18, fontWeight:700, color:"#14532d", margin:"0 0 14px" }}>🏛 Your Board</h2>
+              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                {BOARD.map(m => (
+                  <div key={m.role} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", borderRadius:10, background:"#f9fafb", border:"1px solid #f3f4f6" }}>
+                    <div style={{ width:36, height:36, borderRadius:"50%", background:roleBg[m.role], display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, flexShrink:0 }}>{m.role==="President"?"👑":m.role==="Secretary"?"✏️":"💼"}</div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:1 }}>
+                        <span style={{ fontFamily:"'Lora',serif", fontSize:14, fontWeight:700, color:"#1a2e1a" }}>{m.name}</span>
+                        <span style={{ fontSize:10, fontWeight:700, color:roleColors[m.role], background:roleBg[m.role], borderRadius:99, padding:"1px 7px" }}>{m.role}</span>
+                      </div>
+                      <div style={{ fontSize:11, color:"#6b7280" }}>{m.address}</div>
+                    </div>
+                    <div style={{ textAlign:"right", flexShrink:0 }}>
+                      {m.phone&&<div style={{ fontSize:12, color:"#374151", marginBottom:2 }}>📞 {m.phone}</div>}
+                      <a href={`mailto:${m.email}`} style={{ fontSize:11, color:"#166534", textDecoration:"none" }}>✉️ {m.email}</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Neighbors ── */}
+        {tab==="directory" && (
+          <>
+            <div style={{ marginBottom:14 }}>
+              <input type="text" placeholder="Search by name or address number…" value={search} onChange={e=>setSearch(e.target.value)}
+                style={{ width:"100%", padding:"9px 14px", borderRadius:8, border:"1.5px solid #d1d5db", fontSize:14, fontFamily:"inherit", outline:"none", background:"#fff", boxSizing:"border-box" }}/>
+              <div style={{ fontSize:12, color:"#9ca3af", marginTop:6 }}>
+                Only contact info residents have chosen to share is shown. Click <strong>Update my info</strong> on your address to submit changes for board review.
+              </div>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              {filteredResidents.map(r => <ResidentCard key={r.id} r={r} onRequestEdit={setEditResident}/>)}
+              {filteredResidents.length===0&&<div style={{ textAlign:"center", padding:40, color:"#9ca3af" }}>No results.</div>}
+            </div>
+          </>
+        )}
+
+        {/* ── Meetings ── */}
+        {tab==="meetings" && (
+          <div style={{ background:"#fff", borderRadius:14, padding:"24px 26px", border:"1.5px solid #e5e7eb", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+            <h2 style={{ fontFamily:"'Lora',serif", fontSize:18, fontWeight:700, color:"#14532d", margin:"0 0 16px" }}>📅 Meeting Schedule</h2>
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              {meetings.map(m => (
+                <div key={m.id} style={{ display:"flex", gap:14, alignItems:"flex-start", padding:"14px 16px", borderRadius:10, background:"#f9fafb", border:"1px solid #e5e7eb" }}>
+                  <div style={{ background:"#f0fdf4", borderRadius:8, padding:"10px 14px", textAlign:"center", minWidth:56, border:"1px solid #bbf7d0", flexShrink:0 }}>
+                    <div style={{ fontFamily:"'Lora',serif", fontSize:20, fontWeight:700, color:"#166534" }}>{m.date.split("-")[2]}</div>
+                    <div style={{ fontSize:10, color:"#6b7280", textTransform:"uppercase" }}>{new Date(m.date+"T12:00:00").toLocaleDateString("en-US",{month:"short"})}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight:600, fontSize:15, color:"#1a2e1a", marginBottom:3 }}>{m.time}</div>
+                    {m.location&&<div style={{ fontSize:13, color:"#6b7280", marginBottom:2 }}>📍 {m.location}</div>}
+                    {m.notes&&<div style={{ fontSize:13, color:"#9ca3af" }}>{m.notes}</div>}
+                  </div>
+                </div>
+              ))}
+              {meetings.length===0&&<div style={{ fontSize:14, color:"#9ca3af", textAlign:"center", padding:"20px 0" }}>The next meeting date is TBD — check back soon or contact the board at <a href="mailto:hunterstrailannarbor@gmail.com" style={{color:"#166534"}}>hunterstrailannarbor@gmail.com</a>.</div>}
+            </div>
+          </div>
+        )}
+
+        {/* ── Docs ── */}
+        {tab==="docs" && (
+          <div style={{ background:"#fff", borderRadius:14, padding:"24px 26px", border:"1.5px solid #e5e7eb", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
+            <h2 style={{ fontFamily:"'Lora',serif", fontSize:18, fontWeight:700, color:"#14532d", margin:"0 0 16px" }}>📄 Community Documents</h2>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {docs.map(d => (
+                <div key={d.id} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px", borderRadius:10, background:"#f9fafb", border:"1px solid #e5e7eb", gap:10 }}>
+                  <div>
+                    <div style={{ fontWeight:600, fontSize:15, color:"#1a2e1a", marginBottom:2 }}>📄 {d.title}</div>
+                    {d.description&&<div style={{ fontSize:13, color:"#6b7280" }}>{d.description}</div>}
+                  </div>
+                  {d.url
+                    ? <a href={d.url} target="_blank" rel="noreferrer" style={{ padding:"6px 14px", borderRadius:7, background:"#166534", color:"#fff", fontSize:13, fontWeight:600, textDecoration:"none", flexShrink:0 }}>View</a>
+                    : <span style={{ fontSize:12, color:"#9ca3af", fontStyle:"italic" }}>Link coming soon</span>}
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop:20, padding:"12px 16px", background:"#f0fdf4", borderRadius:8, fontSize:13, color:"#374151", lineHeight:1.6 }}>
+              Questions about HOA documents? Contact the Secretary at <a href="mailto:jennifertankanow@gmail.com" style={{ color:"#166534" }}>jennifertankanow@gmail.com</a>.
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{ textAlign:"center", marginTop:36, fontSize:12, color:"#9ca3af" }}>
+        Hunters Crossing HOA · Ann Arbor, MI 48103 · <a href="mailto:sthelenperry@gmail.com" style={{ color:"#9ca3af" }}>Contact the Board</a>
+      </div>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=DM+Sans:wght@400;500;600&family=DM+Mono&display=swap');
+        input:focus, select:focus, textarea:focus { border-color:#166534!important; box-shadow:0 0 0 3px rgba(22,101,52,0.10); }
+        a:hover { opacity:0.85; }
+        button:hover { opacity:0.88; }
+      `}</style>
+    </div>
+  );
+}
+
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App/>);
+  </script>
+  <noscript>
+    <p style="font-family:sans-serif;padding:40px;text-align:center">
+      This page requires JavaScript. Please enable it in your browser settings.
+    </p>
+  </noscript>
+</body>
+</html>
