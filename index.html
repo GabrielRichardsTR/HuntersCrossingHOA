@@ -21,39 +21,32 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect, useRef } = React;
 
-const residents = [
-  { id: 1,  address: "221 Hunters Trail", name: "Steve & Martha Angerman",          phone: "",             email: "angermansp@aol.com",     showName: true, showPhone: false, showEmail: true  },
-  { id: 3,  address: "228 Hunters Trail", name: "Peter Falkenstein & Kathi Tarrant", phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 4,  address: "233 Hunters Trail", name: "Siena Whitham & Daniel Obrien",     phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 5,  address: "240 Hunters Trail", name: "Paul & Katherine Williams",          phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 6,  address: "245 Hunters Trail", name: "Mihai Burzo & Rada Mihalcea",        phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 7,  address: "254 Hunters Trail", name: "Charles Bruce",                      phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 8,  address: "267 Hunters Trail", name: "John & Denise Toomesian",            phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 9,  address: "270 Hunters Trail", name: "Kristin Cox",                        phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 10, address: "292 Hunters Trail", name: "John & Linda Earl",                  phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 11, address: "295 Hunters Trail", name: "Xin Yan Hu",                         phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 12, address: "303 Hunters Trail", name: "Andy & Jennifer Tankanow",           phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 13, address: "314 Hunters Trail", name: "Mike & Lorraine Lewis",              phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 14, address: "321 Hunters Trail", name: "Bryan & Steve Thelen-Perry",         phone: "",             email: "sthelenperry@gmail.com", showName: true, showPhone: false, showEmail: true  },
-  { id: 15, address: "339 Hunters Trail", name: "Richard Weiss",                      phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 16, address: "352 Hunters Trail", name: "Lutz & Katja Kettenhofen",           phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 17, address: "357 Hunters Trail", name: "Gabriel & Cari Richards",            phone: "734-323-0627", email: "glrichar@gmail.com",     showName: true, showPhone: true,  showEmail: true  },
-  { id: 18, address: "375 Hunters Trail", name: "Matt & Devon Adams",                 phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 19, address: "378 Hunters Trail", name: "Lisa Yeung",                         phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 20, address: "392 Hunters Trail", name: "Tom & Ingela Oginsky",               phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-  { id: 21, address: "393 Hunters Trail", name: "Susan Simon",                        phone: "",             email: "",                       showName: true, showPhone: false, showEmail: false },
-];
+// ── SheetDB connection ────────────────────────────────────────────────────────
+const SHEETDB_BASE = "https://sheetdb.io/api/v1/zyyfhlq7zoi0d";
 
-const announcements = [
-  { id: 1, title: "Welcome to the 2026 Season", body: "The board hopes everyone had a wonderful winter. Please remember annual dues of $400 are due by March 31st.", date: "2026-01-15", type: "announcement" },
-];
-const meetings = [
-  // { id: 1, date: "2026-XX-XX", time: "7:00 PM", location: "303 Hunters Trail", notes: "Annual general meeting — all residents welcome" },
-];
-const docs = [
-  { id: 1, title: "CC&Rs",  url: "", description: "Covenants, Conditions & Restrictions" },
-  { id: 2, title: "Bylaws", url: "", description: "Hunters Crossing HOA Bylaws" },
-];
+async function fetchSheet(tab) {
+  const res = await fetch(`${SHEETDB_BASE}?sheet=${encodeURIComponent(tab)}`);
+  if (!res.ok) throw new Error(`${tab}: ${res.status}`);
+  return res.json();
+}
+
+// Map a raw Residents row to the shape the public site expects.
+// Only fields the resident has opted to share publicly are passed through.
+function mapResident(row) {
+  return {
+    id:        parseInt(row.PropertyID, 10),
+    address:   row.Address        || "",
+    name:      row.ResidentName   || "",
+    phone:     row.Phone          || "",
+    email:     row.Email          || "",
+    showName:  row.ShowNamePublic  === "Yes",
+    showPhone: row.ShowPhonePublic === "Yes",
+    showEmail: row.ShowEmailPublic === "Yes",
+  };
+}
+
+// Board members are hardcoded — they don't come from the sheet
+// because the sheet doesn't store role information.
 const BOARD = [
   { role: "President",  name: "Steven Thelen-Perry", email: "sthelenperry@gmail.com",    address: "321 Hunters Trail" },
   { role: "Secretary",  name: "Jennifer Tankanow",  email: "jennifertankanow@gmail.com", address: "303 Hunters Trail" },
@@ -295,22 +288,138 @@ function AnnouncementBadge({ type }) {
 function App() {
   const [tab,          setTab]          = useState("home");
   const [search,       setSearch]       = useState("");
-  const [editResident, setEditResident] = useState(null);   // opens modal
-  const [pendingQueue, setPendingQueue] = useState([]);     // submitted but not yet approved
+  const [editResident, setEditResident] = useState(null);
+
+  // Live data from Google Sheets
+  const [residents,     setResidents]     = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [meetings,      setMeetings]      = useState([]);
+  const [docs,          setDocs]          = useState([]);
+  const [loading,       setLoading]       = useState(true);
+  const [loadError,     setLoadError]     = useState(null);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      setLoadError(null);
+      try {
+        const [rawResidents, rawAnnouncements, rawMeetings, rawDocs] = await Promise.all([
+          fetchSheet("Residents"),
+          fetchSheet("Announcements"),
+          fetchSheet("Meetings"),
+          fetchSheet("Documents"),
+        ]);
+
+        setResidents(
+          rawResidents
+            .filter(r => r.PropertyID && parseInt(r.PropertyID, 10))
+            .map(mapResident)
+            .sort((a, b) => {
+              const numA = parseInt(a.address, 10);
+              const numB = parseInt(b.address, 10);
+              return numA - numB;
+            })
+        );
+
+        setAnnouncements(
+          rawAnnouncements
+            .filter(a => a.PublishToPublic === "Yes" && a.AnnouncementID)
+            .map(a => ({
+              id:   parseInt(a.AnnouncementID, 10),
+              title: a.Title  || "",
+              body:  a.Body   || "",
+              date:  a.Date   || "",
+              type:  (a.Type  || "announcement").toLowerCase(),
+            }))
+            .sort((a, b) => b.date.localeCompare(a.date))
+        );
+
+        setMeetings(
+          rawMeetings
+            .filter(m => m.PublishToPublic === "Yes" && m.MeetingID)
+            .map(m => ({
+              id:       parseInt(m.MeetingID, 10),
+              date:     m.Date     || "",
+              time:     m.Time     || "",
+              location: m.Location || "",
+              notes:    m.Notes    || "",
+            }))
+            .sort((a, b) => a.date.localeCompare(b.date))
+        );
+
+        setDocs(
+          rawDocs
+            .filter(d => d.PublishToPublic === "Yes" && d.DocumentID)
+            .map(d => ({
+              id:          parseInt(d.DocumentID, 10),
+              title:       d.Title       || "",
+              description: d.Description || "",
+              url:         d.URL         || "",
+              category:    d.Category    || "",
+            }))
+        );
+      } catch (err) {
+        setLoadError("Couldn't load neighborhood data right now. Please try again in a moment.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   const filteredResidents = useMemo(() =>
     residents.filter(r => {
       const q = search.toLowerCase();
       return !q || r.address.toLowerCase().includes(q) || (r.showName && r.name.toLowerCase().includes(q));
-    }), [search]);
+    }), [search, residents]);
 
-  const handleSubmit = (submission) => {
-    setPendingQueue(q => [...q, { ...submission, _qid: Date.now() }]);
+  const handleSubmit = async (submission) => {
+    const data = {
+      SubmissionID:  Date.now(),
+      PropertyID:    submission.id    || "",
+      Address:       submission.address || "",
+      SubmittedName: submission.name  || "",
+      Phone:         submission.phone || "",
+      Email:         submission.email || "",
+      MoveInDate:    submission.moveIn || "",
+      OccupancyStatus: submission.rentalStatus || "",
+      TenantName:    submission.tenantName    || "",
+      TenantPhone:   submission.tenantPhone   || "",
+      LandlordContact: submission.landlordContact || "",
+      ShowName:      submission.showName  ? "Yes" : "No",
+      ShowPhone:     submission.showPhone ? "Yes" : "No",
+      ShowEmail:     submission.showEmail ? "Yes" : "No",
+      Notes:         submission.notes || "",
+      Status:        "Pending",
+      SubmittedAt:   submission.submittedAt || new Date().toISOString(),
+    };
+    await fetch(`${SHEETDB_BASE}?sheet=PendingSubmissions`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify({ data: [data] }),
+    });
   };
 
   const roleColors = { President:"#14532d", Secretary:"#1e40af", Treasurer:"#92400e" };
   const roleBg     = { President:"#dcfce7", Secretary:"#dbeafe", Treasurer:"#fef3c7" };
   const TABS = [["home","🏡 Home"],["directory","👋 Neighbors"],["meetings","📅 Meetings"],["docs","📄 Documents"]];
+
+  if (loading) return (
+    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(160deg,#f0fdf4 0%,#f9fafb 60%,#ecfdf5 100%)", flexDirection:"column", gap:16 }}>
+      <div style={{ fontSize:36 }}>🌲</div>
+      <div style={{ fontFamily:"'Lora',serif", fontSize:18, color:"#14532d", fontWeight:700 }}>Hunters Crossing</div>
+      <div style={{ fontSize:13, color:"#6b7280" }}>Loading neighborhood data…</div>
+    </div>
+  );
+
+  if (loadError) return (
+    <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"linear-gradient(160deg,#f0fdf4 0%,#f9fafb 60%,#ecfdf5 100%)", flexDirection:"column", gap:16, padding:24 }}>
+      <div style={{ fontSize:36 }}>⚠️</div>
+      <div style={{ fontFamily:"'Lora',serif", fontSize:18, color:"#14532d", fontWeight:700 }}>Couldn't Load Page</div>
+      <div style={{ fontSize:13, color:"#6b7280", textAlign:"center", maxWidth:360 }}>{loadError}</div>
+      <button onClick={() => window.location.reload()} style={{ padding:"8px 20px", borderRadius:8, border:"none", background:"#166534", color:"#fff", fontSize:13, fontWeight:600, cursor:"pointer" }}>Try Again</button>
+    </div>
+  );
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(160deg,#f0fdf4 0%,#f9fafb 60%,#ecfdf5 100%)", fontFamily:"'DM Sans',sans-serif", padding:"0 0 60px 0" }}>
